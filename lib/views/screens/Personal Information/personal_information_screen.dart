@@ -269,7 +269,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   String _phone = '';
   String? _imagePath;
 
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController() ;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
