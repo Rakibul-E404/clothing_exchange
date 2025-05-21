@@ -29,16 +29,21 @@ class HomeController extends GetxController {
 
       log('API Response: ${response.body}');
       final jsonMap = jsonDecode(response.body);
-      final List<dynamic> productListJson = jsonMap['data']['attributes']['data'];
+      final List<dynamic> productListJson =
+          jsonMap['data']['attributes']['data'];
 
-      productList.value = productListJson.map<Product>((json) {
-        final product = Product.fromJson(json);
-        log('Loaded Product: ${product.title} | Age: ${product.age} | Size: ${product.size} | Gender: ${product.gender}');
-        return product;
-      }).toList();
+      productList.value =
+          productListJson.map<Product>((json) {
+            final product = Product.fromJson(json);
+            log(
+              'Loaded Product: ${product.title} | Age: ${product.age} | Size: ${product.size} | Gender: ${product.gender}',
+            );
+            return product;
+          }).toList();
 
       log('Total products loaded: ${productList.length}');
     } catch (e) {
+      // checking for error
       log('Error fetching products: $e');
     }
   }
