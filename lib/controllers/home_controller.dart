@@ -36,7 +36,7 @@ class HomeController extends GetxController {
           productListJson.map<Product>((json) {
             final product = Product.fromJson(json);
             log(
-              'Loaded Product: ${product.title} | Age: ${product.age} | Size: ${product.size} | Gender: ${product.gender}',
+              'Loaded Product show: ${product.title} | Age: ${product.age} | Size: ${product.size} | Gender: ${product.gender}',
             );
             return product;
           }).toList();
