@@ -1,42 +1,148 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/colors.dart';
-import '../../fonts_style/fonts_style.dart';
-import '../Auth/signup_screen.dart';
+import 'package:html_unescape/html_unescape.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
-class AboutUsScreen extends StatelessWidget {
+import '../../../Utils/app_constants.dart';
+import '../../../Utils/app_url.dart';
+import '../../../Utils/helper_shared_pref.dart';
+
+class AboutUsData {
+  final String content;
+  final DateTime updatedAt;
+
+  AboutUsData({required this.content, required this.updatedAt});
+}
+
+class AboutUsScreen extends StatefulWidget {
   const AboutUsScreen({super.key});
+
+  @override
+  State<AboutUsScreen> createState() => _AboutUsScreenState();
+}
+
+class _AboutUsScreenState extends State<AboutUsScreen> {
+  late Future<AboutUsData> _aboutUsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _aboutUsFuture = fetchAboutUs();
+  }
+
+  Future<AboutUsData> fetchAboutUs() async {
+    try {
+      final token = SharedPrefHelper().getData(AppConstants.token);
+
+      final response = await http.get(
+        Uri.parse('${AppUrl.baseUrl}/about/'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final contentRaw = data['data']?['attributes']?['content'] ??
+            data['content'] ??
+            data['data']?['content'] ??
+            "No content available";
+
+        final updatedAtRaw = data['data']?['attributes']?['updatedAt'] ?? '';
+
+        final unescape = HtmlUnescape();
+        final content = unescape.convert(contentRaw);
+
+        DateTime updatedAt = DateTime.tryParse(updatedAtRaw) ?? DateTime.now();
+
+        return AboutUsData(content: content, updatedAt: updatedAt);
+      } else if (response.statusCode == 401) {
+        throw Exception('Session expired. Please login again.');
+      } else {
+        throw Exception('Failed to load data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching about us: $e');
+      throw Exception('Failed to load content: ${e.toString()}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "About us",
-          style: AppTextFont.regular(10, AppColors.primary_text_color),
+        title: const Text("About us"),
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined),
         ),
-        leading: IconButton(onPressed: ()=> Get.to(SignUPScreen()), icon: Icon(Icons.arrow_back_ios_new_outlined)),
-
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'About us',
-                style: AppTextFont.regular(24, AppColors.primary_text_color),
+      body: FutureBuilder<AboutUsData>(
+        future: _aboutUsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      snapshot.error.toString(),
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _aboutUsFuture = fetchAboutUs();
+                        });
+                      },
+                      child: const Text(
+                        'Retry',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                "Lorem ipsum dolor sit amet consectetur. Ultrices id feugiat venenatis habitant mattis viverra elementum purus volutpat. Lacus eu molestie pulvinar rhoncus integer proin elementum. Pretium sit fringilla massa tristique aenean commodo leo. Aliquet viverra amet sit porta elementum et pellentesque posuere. Ullamcorper viverra tortor lobortis viverra auctor egestas. Nulla condimentum ac metus quam turpis gravida ut velit. Porta justo lacus consequat sed platea. Ut dui massa quam elit faucibus consectetur sapien aenean auctor. Felis ipsum amet justo in. Netus amet in egestas sed auctor lorem. Justo ullamcorper velit habitasse lorem eu arcu. Non enim a elit urna eget nibh quisque donec condimentum. Elit ut pellentesque neque in quis at viverra. Nisl etiam tristique odio eget convallis.",
-                textAlign: TextAlign.justify,
-                style: AppTextFont.regular(16, AppColors.primary_text_color),
+            );
+          } else if (snapshot.hasData) {
+            final data = snapshot.data!;
+            final formattedDate = DateFormat('MMM d, yyyy').format(data.updatedAt);
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Last Update $formattedDate',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    data.content,
+                    textAlign: TextAlign.justify,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            );
+          }
+          return const Center(child: Text('No data available'));
+        },
       ),
     );
   }

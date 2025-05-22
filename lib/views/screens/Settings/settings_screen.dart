@@ -2,6 +2,7 @@ import 'package:clothing_exchange/utils/colors.dart';
 import 'package:clothing_exchange/views/fonts_style/fonts_style.dart';
 import 'package:clothing_exchange/views/screens/About%20us/about_us_screen.dart';
 import 'package:clothing_exchange/views/screens/Home/home_screen.dart';
+import 'package:clothing_exchange/views/screens/Legal%20Notice/legal_notice_screen.dart';
 import 'package:clothing_exchange/views/screens/Profile/change_password_screen.dart';
 import 'package:clothing_exchange/views/screens/Terms%20and%20Privacy/privacy_policy_screen.dart';
 import 'package:clothing_exchange/views/screens/Terms%20and%20Privacy/terms_&_conditions.dart';
@@ -149,6 +150,48 @@ class SettingsScreen extends StatelessWidget {
                               const SizedBox(width: 8),
                               Text(
                                 "Terms and Conditions",
+                                style: AppTextFont.regular(
+                                    15, AppColors.primary_text_color),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.arrow_forward_ios,
+                                  color: AppColors.primary_text_color)
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 8,
+                  ),
+                  CustomOutlinedButton(
+                    borderRadius: 20,
+                    onPressed: () => Get.to(LegalNoticeScreen()),
+                    borderColor: AppColors.secondaryColor,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/icons/terms_condition_icon.svg',
+                                height: 24,
+                                width: 24,
+                                color: AppColors.profilePageIconsColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Leagal Notice",
                                 style: AppTextFont.regular(
                                     15, AppColors.primary_text_color),
                               ),

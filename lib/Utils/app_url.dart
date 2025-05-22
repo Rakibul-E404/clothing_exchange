@@ -1,7 +1,7 @@
 class AppUrl {
   AppUrl._();
-  static String imageBaseUrl = 'https://d7001.sobhoy.com/';
   static String baseUrl = 'https://d7001.sobhoy.com/api/v1';
+  static String imageBaseUrl = 'https://d7001.sobhoy.com/';
   static String userProfileUrl = '$baseUrl/users/self/in';
   static String authRegister = '$baseUrl/auth/register';
   static String authLogin = '$baseUrl/auth/login';
