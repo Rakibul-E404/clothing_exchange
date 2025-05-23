@@ -1,16 +1,22 @@
 import 'package:clothing_exchange/utils/colors.dart';
 import 'package:clothing_exchange/views/widget/CustomOutlinedButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // for Clipboard
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
 
-  Future<void> _launchEmail() async {
+  Future<void> _launchEmail(BuildContext context, String emailAddress) async {
+    // Copy email to clipboard
+    await Clipboard.setData(ClipboardData(text: emailAddress));
+    Get.snackbar('Copied', 'Email address copied to clipboard');
+
+    // Launch email client
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: 'support@gmail.com',
+      path: emailAddress,
       queryParameters: {'subject': 'Clothing Exchange Support'},
     );
 
@@ -23,12 +29,14 @@ class SupportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const String supportEmail = 'support@gmail.com';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Support'),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Get.back(),
         ),
       ),
@@ -37,60 +45,18 @@ class SupportScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Contact Our Support Team',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             const SizedBox(height: 10),
-            const Text(
-              'We\'re here to help with any questions or issues you may have.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
             const SizedBox(height: 40),
             CustomOutlinedButton(
               svgIcon: 'assets/icons/gmail_icon.svg',
-              text: 'support@gmail.com',
-              onPressed: _launchEmail,
+              text: supportEmail,
+              onPressed: () => _launchEmail(context, supportEmail),
               backgroundColor: Colors.white,
               borderColor: AppColors.secondaryColor,
               textColor: AppColors.secondaryColor,
               iconColor: AppColors.secondaryColor,
             ),
             const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 20),
-            const Text(
-              'Frequently Asked Questions',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 15),
-            Expanded(
-              child: ListView(
-                children: const [
-                  FAQItem(
-                    question: 'How do I exchange an item?',
-                    answer: 'Go to your inbox, select the item you want to exchange, and propose an exchange to the owner.',
-                  ),
-                  FAQItem(
-                    question: 'What if I receive a damaged item?',
-                    answer: 'Contact support immediately with photos of the damaged item for assistance.',
-                  ),
-                  FAQItem(
-                    question: 'How long does shipping usually take?',
-                    answer: 'Shipping times vary but typically take 3-5 business days after both parties confirm the exchange.',
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -131,3 +97,5 @@ class FAQItem extends StatelessWidget {
     );
   }
 }
+
+/// todo: need to navigate into gmail app not any email app but current is email app ok. . .
