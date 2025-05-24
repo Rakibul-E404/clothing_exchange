@@ -51,11 +51,11 @@ class WishlistScreen extends StatelessWidget {
             leading: Icon(Icons.favorite, color: Colors.red),
             title: Text(
               item.title,
-              style: AppTextFont.bold(16, AppColors.primaryColor),
+              style: AppTextFont.bold(16, AppColors.secondary_text_color),
             ),
             subtitle: Text(
               'Age: ${item.age}',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: Colors.black, fontSize: 14),
             ),
             trailing: IconButton(
               icon: Icon(Icons.remove_circle_outline, color: Colors.red),
