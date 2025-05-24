@@ -1,3 +1,6 @@
+// import 'dart:convert';
+//
+// import 'package:clothing_exchange/Utils/app_url.dart';
 // import 'package:clothing_exchange/utils/colors.dart';
 // import 'package:clothing_exchange/views/screens/Chat/chat_list_screen.dart';
 // import 'package:clothing_exchange/views/screens/Home/home_screen.dart';
@@ -6,107 +9,107 @@
 // import 'package:clothing_exchange/views/widget/customTextField.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
+// import 'package:http/http.dart' as http;
+// import '../../../Utils/app_constants.dart';
+// import '../../../Utils/helper_shared_pref.dart';
+// import '../../../models/chat_model.dart';
 //
 // class InboxChatScreen extends StatelessWidget {
 //   final String name;
 //
 //   const InboxChatScreen({super.key, required this.name});
 //
-//
 //   void _showReportDialog(BuildContext context) {
 //     showDialog(
 //       context: context,
-//       builder: (context) => Dialog(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(12),
-//         ),
-//         child: Padding(
-//           padding: const EdgeInsets.all(16.0),
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text(
-//                 "Report an Issue with Your Product",
-//                 style: TextStyle(
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//               SizedBox(height: 8),
-//               Text(
-//                 "Let us know your issue, and we'll help resolve it as soon as possible.",
-//                 style: TextStyle(
-//                   fontSize: 14,
-//                   color: Colors.grey.shade600,
-//                 ),
-//               ),
-//               SizedBox(height: 16),
-//               Divider(height: 1),
-//               SizedBox(height: 16),
-//
-//               SizedBox(height: 8),
-//
-//               CustomTextField(
-//                   hintText: 'Subject',
-//               borderRadius: 30,
-//               ),
-//
-//               SizedBox(height: 16),
-//
-//
-//               CustomTextField(
-//                 hintText: 'Type Here',
-//                 borderRadius: 20,
-//
-//               ),
-//               SizedBox(height: 24),
-//
-//               // Buttons
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.end,
+//       builder:
+//           (context) => Dialog(
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(12),
+//             ),
+//             child: Padding(
+//               padding: const EdgeInsets.all(16.0),
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.min,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
 //                 children: [
-//                   CustomOutlinedButton(onPressed:()=>Get.back(),
-//                   text: 'Cancle',),
-//                   SizedBox(width: 8),
-//                   CustomElevatedButton(text: "Submit",
-//                       borderRadius:30,
-//                       onPressed: ()=>Get.to(ChatListScreen())),
+//                   Text(
+//                     "Report an Issue with Your Product",
+//                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//                   ),
+//                   SizedBox(height: 8),
+//                   Text(
+//                     "Let us know your issue, and we'll help resolve it as soon as possible.",
+//                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+//                   ),
+//                   SizedBox(height: 16),
+//                   Divider(height: 1),
+//                   SizedBox(height: 16),
+//
+//                   SizedBox(height: 8),
+//
+//                   CustomTextField(hintText: 'Subject', borderRadius: 30),
+//
+//                   SizedBox(height: 16),
+//
+//                   CustomTextField(hintText: 'Type Here', borderRadius: 20),
+//                   SizedBox(height: 24),
+//
+//                   // Buttons
+//                   Row(
+//                     mainAxisAlignment: MainAxisAlignment.end,
+//                     children: [
+//                       CustomOutlinedButton(
+//                         onPressed: () => Get.back(),
+//                         text: 'Cancle',
+//                       ),
+//                       SizedBox(width: 8),
+//                       CustomElevatedButton(
+//                         text: "Submit",
+//                         borderRadius: 30,
+//                         onPressed: () => Get.to(ChatListScreen()),
+//                       ),
+//                     ],
+//                   ),
 //                 ],
 //               ),
-//             ],
+//             ),
 //           ),
-//         ),
-//       ),
 //     );
 //   }
 //
 //   void _showConfirmationDialog(BuildContext context) {
 //     showDialog(
 //       context: context,
-//       builder: (context) => AlertDialog(
-//         title: Text("Confirm Exchange"),
-//         content: Text("Are you sure you want to mark this exchange as done?"),
-//         actions: [
-//           CustomOutlinedButton(
-//             onPressed: () {
-//               Get.back();
-//             },
-//             text: "Cancel",
+//       builder:
+//           (context) => AlertDialog(
+//             title: Text("Confirm Exchange"),
+//             content: Text(
+//               "Are you sure you want to mark this exchange as done?",
+//             ),
+//             actions: [
+//               CustomOutlinedButton(
+//                 onPressed: () {
+//                   Get.back();
+//                 },
+//                 text: "Cancel",
+//               ),
+//               CustomElevatedButton(
+//                 borderRadius: 30,
+//                 text: "Confirm",
+//                 onPressed: () {
+//                   Get.to(HomeScreen());
+//                 },
+//               ),
+//             ],
 //           ),
-//           CustomElevatedButton(
-//               borderRadius: 30,
-//               text: "Confirm",
-//               onPressed: () {
-//                 Get.to(HomeScreen());
-//               })
-//         ],
-//       ),
 //     );
 //   }
 //
 //   @override
 //   Widget build(BuildContext context) {
+//     final ChatController chatController = Get.find<ChatController>();
+//
 //     return Scaffold(
 //       appBar: AppBar(
 //         automaticallyImplyLeading: false,
@@ -130,10 +133,7 @@
 //                   ),
 //                   Text(
 //                     name,
-//                     style: TextStyle(
-//                       fontSize: 18,
-//                       fontWeight: FontWeight.w600,
-//                     ),
+//                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
 //                   ),
 //
 //                   Positioned(
@@ -193,10 +193,9 @@
 //               decoration: BoxDecoration(
 //                 borderRadius: BorderRadius.all(Radius.circular(16)),
 //                 border: Border.all(
-//
 //                   // all: BorderSide(
-//                     color: AppColors.secondaryColor,
-//                     width: 1,
+//                   color: AppColors.secondaryColor,
+//                   width: 1,
 //                   // ),
 //                 ),
 //               ),
@@ -205,18 +204,12 @@
 //                 children: [
 //                   Text(
 //                     "Formal Suit Set",
-//                     style: TextStyle(
-//                       fontSize: 16,
-//                       fontWeight: FontWeight.bold,
-//                     ),
+//                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
 //                   ),
 //                   SizedBox(height: 4),
 //                   Text(
 //                     "Age: 18-18 years",
-//                     style: TextStyle(
-//                       fontSize: 14,
-//                       color: Colors.grey.shade600,
-//                     ),
+//                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
 //                   ),
 //                   SizedBox(height: 8),
 //                   Text(
@@ -226,10 +219,7 @@
 //                   SizedBox(height: 4),
 //                   Text(
 //                     "Location: location, dhuba",
-//                     style: TextStyle(
-//                       fontSize: 14,
-//                       color: Colors.grey.shade600,
-//                     ),
+//                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
 //                   ),
 //                   SizedBox(height: 16),
 //                   Container(
@@ -256,148 +246,194 @@
 //           ),
 //
 //           // Chat messages
+//           // Expanded(
+//           //   child: ListView(
+//           //     padding: EdgeInsets.all(16),
+//           //     children: [
+//           //       // Exchange Done message
+//           //       Container(
+//           //         margin: EdgeInsets.only(bottom: 16),
+//           //         padding: EdgeInsets.all(12),
+//           //         decoration: BoxDecoration(
+//           //           color: Colors.grey.shade200,
+//           //           borderRadius: BorderRadius.circular(4),
+//           //         ),
+//           //         child: Text(
+//           //           "Hi, I'd like to exchange this dress.",
+//           //           style: TextStyle(color: Colors.grey.shade700),
+//           //         ),
+//           //       ),
+//           //       SizedBox(height: 8),
+//           //       // Time indicator
+//           //       Align(
+//           //         alignment: Alignment.centerRight,
+//           //         child: Padding(
+//           //           padding: EdgeInsets.only(right: 8.0),
+//           //           child: Text(
+//           //             "09:25 AM",
+//           //             style: TextStyle(fontSize: 12, color: Colors.grey),
+//           //           ),
+//           //         ),
+//           //       ),
+//           //       SizedBox(height: 16),
+//           //       // John Abraham message
+//           //       Row(
+//           //         crossAxisAlignment: CrossAxisAlignment.start,
+//           //         children: [
+//           //           CircleAvatar(
+//           //             radius: 16,
+//           //             backgroundColor: Colors.grey.shade300,
+//           //             child: Icon(Icons.person, size: 16),
+//           //           ),
+//           //           SizedBox(width: 8),
+//           //           Expanded(
+//           //             child: Column(
+//           //               crossAxisAlignment: CrossAxisAlignment.start,
+//           //               children: [
+//           //                 Text(
+//           //                   chatController
+//           //                           .messageResponse
+//           //                           .value
+//           //                           ?.data
+//           //                           .attributes
+//           //                           .data[0]
+//           //                           .msgByUserId
+//           //                           .email ??
+//           //                       '',
+//           //                   style: TextStyle(
+//           //                     fontWeight: FontWeight.bold,
+//           //                     fontSize: 12,
+//           //                   ),
+//           //                 ),
+//           //                 Text(
+//           //                   "Of Counsel",
+//           //                   style: TextStyle(fontSize: 10, color: Colors.grey),
+//           //                 ),
+//           //                 SizedBox(height: 4),
+//           //                 Container(
+//           //                   padding: EdgeInsets.all(12),
+//           //                   decoration: BoxDecoration(
+//           //                     color: Colors.grey.shade300,
+//           //                     borderRadius: BorderRadius.only(
+//           //                       topRight: Radius.circular(8),
+//           //                       bottomLeft: Radius.circular(8),
+//           //                       bottomRight: Radius.circular(8),
+//           //                     ),
+//           //                   ),
+//           //                   child: Text(
+//           //                     "Yes, have it is. I'd like a different size",
+//           //                   ),
+//           //                 ),
+//           //               ],
+//           //             ),
+//           //           ),
+//           //           SizedBox(width: 8),
+//           //           Text(
+//           //             "09:23 AM",
+//           //             style: TextStyle(fontSize: 12, color: Colors.grey),
+//           //           ),
+//           //         ],
+//           //       ),
+//           //       SizedBox(height: 16),
+//           //       // Response message
+//           //       Row(
+//           //         crossAxisAlignment: CrossAxisAlignment.start,
+//           //         children: [
+//           //           CircleAvatar(
+//           //             radius: 16,
+//           //             backgroundColor: Colors.grey.shade300,
+//           //             child: Icon(Icons.person, size: 16),
+//           //           ),
+//           //           SizedBox(width: 8),
+//           //           Expanded(
+//           //             child: Column(
+//           //               crossAxisAlignment: CrossAxisAlignment.start,
+//           //               children: [
+//           //                 Text(
+//           //                   "John Abraham",
+//           //                   style: TextStyle(
+//           //                     fontWeight: FontWeight.bold,
+//           //                     fontSize: 12,
+//           //                   ),
+//           //                 ),
+//           //                 SizedBox(height: 4),
+//           //                 Container(
+//           //                   padding: EdgeInsets.all(12),
+//           //                   decoration: BoxDecoration(
+//           //                     color: Colors.grey.shade300,
+//           //                     borderRadius: BorderRadius.only(
+//           //                       topRight: Radius.circular(8),
+//           //                       bottomLeft: Radius.circular(8),
+//           //                       bottomRight: Radius.circular(8),
+//           //                     ),
+//           //                   ),
+//           //                   child: Text(
+//           //                     "No Problem! Let Me Check Availability",
+//           //                   ),
+//           //                 ),
+//           //               ],
+//           //             ),
+//           //           ),
+//           //           SizedBox(width: 8),
+//           //           Text(
+//           //             "09:23 AM",
+//           //             style: TextStyle(fontSize: 12, color: Colors.grey),
+//           //           ),
+//           //         ],
+//           //       ),
+//           //       SizedBox(height: 16),
+//           //       // Simple message
+//           //       Align(
+//           //         alignment: Alignment.centerLeft,
+//           //         child: Container(
+//           //           padding: EdgeInsets.all(12),
+//           //           decoration: BoxDecoration(
+//           //             color: Colors.grey.shade300,
+//           //             borderRadius: BorderRadius.only(
+//           //               topRight: Radius.circular(8),
+//           //               bottomLeft: Radius.circular(8),
+//           //               bottomRight: Radius.circular(8),
+//           //             ),
+//           //           ),
+//           //           child: Text("Sure!"),
+//           //         ),
+//           //       ),
+//           //       SizedBox(height: 8),
+//           //       Align(
+//           //         alignment: Alignment.centerRight,
+//           //         child: Text(
+//           //           "09:23 AM",
+//           //           style: TextStyle(fontSize: 12, color: Colors.grey),
+//           //         ),
+//           //       ),
+//           //     ],
+//           //   ),
+//           // ),
+//
+//
+//
+//
+//
+//
+//
+//
 //           Expanded(
-//             child: ListView(
-//               padding: EdgeInsets.all(16),
-//               children: [
-//                 // Exchange Done message
-//                 Container(
-//                   margin: EdgeInsets.only(bottom: 16),
-//                   padding: EdgeInsets.all(12),
-//                   decoration: BoxDecoration(
-//                     color: Colors.grey.shade200,
-//                     borderRadius: BorderRadius.circular(4),
-//                   ),
-//                   child: Text(
-//                     "Hi, I'd like to exchange this dress.",
-//                     style: TextStyle(
-//                       color: Colors.grey.shade700,
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(height: 8),
-//                 // Time indicator
-//                 Align(
-//                   alignment: Alignment.centerRight,
-//                   child: Padding(
-//                     padding: EdgeInsets.only(right: 8.0),
-//                     child: Text(
-//                       "09:25 AM",
-//                       style: TextStyle(
-//                         fontSize: 12,
-//                         color: Colors.grey,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(height: 16),
-//                 // John Abraham message
-//                 Row(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     CircleAvatar(
-//                       radius: 16,
-//                       backgroundColor: Colors.grey.shade300,
-//                       child: Icon(Icons.person, size: 16),
-//                     ),
-//                     SizedBox(width: 8),
-//                     Expanded(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             "John Abraham",
-//                             style: TextStyle(
-//                               fontWeight: FontWeight.bold,
-//                               fontSize: 12,
-//                             ),
-//                           ),
-//                           Text(
-//                             "Of Counsel",
-//                             style: TextStyle(
-//                               fontSize: 10,
-//                               color: Colors.grey,
-//                             ),
-//                           ),
-//                           SizedBox(height: 4),
-//                           Container(
-//                             padding: EdgeInsets.all(12),
-//                             decoration: BoxDecoration(
-//                               color: Colors.grey.shade300,
-//                               borderRadius: BorderRadius.only(
-//                                 topRight: Radius.circular(8),
-//                                 bottomLeft: Radius.circular(8),
-//                                 bottomRight: Radius.circular(8),
-//                               ),
-//                             ),
-//                             child: Text("Yes, have it is. I'd like a different size"),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                     SizedBox(width: 8),
-//                     Text(
-//                       "09:23 AM",
-//                       style: TextStyle(
-//                         fontSize: 12,
-//                         color: Colors.grey,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 16),
-//                 // Response message
-//                 Row(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     CircleAvatar(
-//                       radius: 16,
-//                       backgroundColor: Colors.grey.shade300,
-//                       child: Icon(Icons.person, size: 16),
-//                     ),
-//                     SizedBox(width: 8),
-//                     Expanded(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             "John Abraham",
-//                             style: TextStyle(
-//                               fontWeight: FontWeight.bold,
-//                               fontSize: 12,
-//                             ),
-//                           ),
-//                           SizedBox(height: 4),
-//                           Container(
-//                             padding: EdgeInsets.all(12),
-//                             decoration: BoxDecoration(
-//                               color: Colors.grey.shade300,
-//                               borderRadius: BorderRadius.only(
-//                                 topRight: Radius.circular(8),
-//                                 bottomLeft: Radius.circular(8),
-//                                 bottomRight: Radius.circular(8),
-//                               ),
-//                             ),
-//                             child: Text("No Problem! Let Me Check Availability"),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                     SizedBox(width: 8),
-//                     Text(
-//                       "09:23 AM",
-//                       style: TextStyle(
-//                         fontSize: 12,
-//                         color: Colors.grey,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 16),
-//                 // Simple message
-//                 Align(
-//                   alignment: Alignment.centerLeft,
-//                   child: Container(
+//             child: Obx(() {
+//               final messages = chatController.messageResponse.value?.data.attributes.data ?? [];
+//
+//               return ListView.builder(
+//                 padding: EdgeInsets.all(16),
+//                 itemCount: messages.length,
+//                 reverse: true, // show latest messages at bottom
+//                 itemBuilder: (context, index) {
+//                   final msg = messages[messages.length - 1 - index]; // reverse indexing
+//                   final isCurrentUser = msg.msgByUserId.email == "John Abraham"; // or your logic
+//                   final messageText = msg.text ?? "";
+//                   final messageTime = DateFormat('hh:mm a').format(DateTime.parse(msg.createdAt ?? DateTime.now().toString()));
+//                   final senderName = isCurrentUser ? "John Abraham" : msg.msgByUserId.email ?? "Unknown";
+//                   final senderSubtitle = isCurrentUser ? null : "Of Counsel"; // example, adjust as needed
+//
+//                   Widget messageBubble = Container(
 //                     padding: EdgeInsets.all(12),
 //                     decoration: BoxDecoration(
 //                       color: Colors.grey.shade300,
@@ -407,33 +443,103 @@
 //                         bottomRight: Radius.circular(8),
 //                       ),
 //                     ),
-//                     child: Text("Sure!"),
-//                   ),
-//                 ),
-//                 SizedBox(height: 8),
-//                 Align(
-//                   alignment: Alignment.centerRight,
-//                   child: Text(
-//                     "09:23 AM",
-//                     style: TextStyle(
-//                       fontSize: 12,
-//                       color: Colors.grey,
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
+//                     child: Text(messageText),
+//                   );
+//
+//                   return Column(
+//                     crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+//                     children: [
+//                       if (!isCurrentUser)
+//                         Row(
+//                           crossAxisAlignment: CrossAxisAlignment.start,
+//                           children: [
+//                             CircleAvatar(
+//                               radius: 16,
+//                               backgroundColor: Colors.grey.shade300,
+//                               child: Icon(Icons.person, size: 16),
+//                             ),
+//                             SizedBox(width: 8),
+//                             Expanded(
+//                               child: Column(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text(
+//                                     senderName,
+//                                     style: TextStyle(
+//                                       fontWeight: FontWeight.bold,
+//                                       fontSize: 12,
+//                                     ),
+//                                   ),
+//                                   if (senderSubtitle != null)
+//                                     Text(
+//                                       senderSubtitle,
+//                                       style: TextStyle(fontSize: 10, color: Colors.grey),
+//                                     ),
+//                                   SizedBox(height: 4),
+//                                   messageBubble,
+//                                 ],
+//                               ),
+//                             ),
+//                             SizedBox(width: 8),
+//                             Text(
+//                               messageTime,
+//                               style: TextStyle(fontSize: 12, color: Colors.grey),
+//                             ),
+//                           ],
+//                         )
+//                       else
+//                         Row(
+//                           mainAxisAlignment: MainAxisAlignment.end,
+//                           crossAxisAlignment: CrossAxisAlignment.start,
+//                           children: [
+//                             Expanded(
+//                               child: Column(
+//                                 crossAxisAlignment: CrossAxisAlignment.end,
+//                                 children: [
+//                                   Text(
+//                                     senderName,
+//                                     style: TextStyle(
+//                                       fontWeight: FontWeight.bold,
+//                                       fontSize: 12,
+//                                     ),
+//                                   ),
+//                                   SizedBox(height: 4),
+//                                   messageBubble,
+//                                 ],
+//                               ),
+//                             ),
+//                             SizedBox(width: 8),
+//                             Text(
+//                               messageTime,
+//                               style: TextStyle(fontSize: 12, color: Colors.grey),
+//                             ),
+//                             SizedBox(width: 8),
+//                             CircleAvatar(
+//                               radius: 16,
+//                               backgroundColor: Colors.grey.shade300,
+//                               child: Icon(Icons.person, size: 16),
+//                             ),
+//                           ],
+//                         ),
+//                       SizedBox(height: 16),
+//                     ],
+//                   );
+//                 },
+//               );
+//             }),
 //           ),
+//
+//
+//
+//
+//
 //
 //           // Message input
 //           Container(
 //             padding: EdgeInsets.all(8),
 //             decoration: BoxDecoration(
 //               border: Border(
-//                 top: BorderSide(
-//                   color: Colors.grey.shade300,
-//                   width: 1,
-//                 ),
+//                 top: BorderSide(color: Colors.grey.shade300, width: 1),
 //               ),
 //             ),
 //             child: Row(
@@ -468,105 +574,64 @@
 //     );
 //   }
 // }
+//
+// class ChatController extends GetxController {
+//   // Rxn<MessagesResponse> messageResponse = Rxn<MessagesResponse> ;
+//   Rxn<MessagesResponse> messageResponse = Rxn<MessagesResponse>();
+//
+//   fetchSingleMessage({required String conversationId}) async {
+//     final token = await SharedPrefHelper().getData(AppConstants.token);
+//     final response = await http.get(
+//       Uri.parse(AppUrl.getSingleConversation(conversationId)),
+//       headers: {
+//         'Authorization': 'Bearer $token',
+//         'Content-Type': 'application/json',
+//       },
+//     );
+//     debugPrint(response.toString());
+//     final responseBody = jsonDecode(response.body);
+//     messageResponse.value = MessagesResponse.fromJson(responseBody);
+//     debugPrint('Response body =====> ');
+//     debugPrint(messageResponse.value?.data.attributes.totalResults.toString());
+//   }
+// }
+
+
+
 
 
 
 ///
-/// todo::: adding the api
+/// todo::: fixing the UI with messge list
 ///
+
+
+
 
 
 
 import 'dart:convert';
 
+import 'package:clothing_exchange/Utils/app_url.dart';
 import 'package:clothing_exchange/utils/colors.dart';
+import 'package:clothing_exchange/views/screens/Chat/chat_list_screen.dart';
+import 'package:clothing_exchange/views/screens/Home/home_screen.dart';
+import 'package:clothing_exchange/views/widget/CustomOutlinedButton.dart';
+import 'package:clothing_exchange/views/widget/customElevatedButton.dart';
+import 'package:clothing_exchange/views/widget/customTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart'; // Added for DateFormat
 
 import '../../../Utils/app_constants.dart';
-import '../../../Utils/app_url.dart';
 import '../../../Utils/helper_shared_pref.dart';
-import '../../widget/CustomOutlinedButton.dart';
-import '../../widget/customElevatedButton.dart';
-import '../../widget/customTextField.dart';
-import '../Home/home_screen.dart';
+import '../../../models/chat_model.dart';
 
-class InboxChatScreen extends StatefulWidget {
+class InboxChatScreen extends StatelessWidget {
   final String name;
-  final String conversationId;
-  final String currentUserId;
 
-  const InboxChatScreen({
-    super.key,
-    required this.name,
-    required this.conversationId,
-    required this.currentUserId,
-  });
-
-  @override
-  State<InboxChatScreen> createState() => _InboxChatScreenState();
-}
-
-class _InboxChatScreenState extends State<InboxChatScreen> {
-  List<dynamic> messages = [];
-  bool isLoading = true;
-  String? error;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchMessages();
-  }
-
-  Future<void> fetchMessages() async {
-    try {
-      final token = await SharedPrefHelper().getData(AppConstants.token) as String?;
-      if (token == null || token.isEmpty) {
-        setState(() {
-          error = "No authentication token found.";
-          isLoading = false;
-        });
-        return;
-      }
-
-      final url = Uri.parse(
-          '${AppUrl.baseUrl}/conversation/get-messages?conversationId=${widget.conversationId}');
-      final response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-        if (jsonResponse['code'] == 200) {
-          setState(() {
-            messages = jsonResponse['data']['attributes']['data'] ?? [];
-            isLoading = false;
-          });
-        } else {
-          setState(() {
-            error = "Failed to load messages: ${jsonResponse['message']}";
-            isLoading = false;
-          });
-        }
-      } else {
-        setState(() {
-          error = "Failed to load messages. Status code: ${response.statusCode}";
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        error = "An error occurred: $e";
-        isLoading = false;
-      });
-    }
-  }
+  const InboxChatScreen({super.key, required this.name});
 
   void _showReportDialog(BuildContext context) {
     showDialog(
@@ -583,31 +648,19 @@ class _InboxChatScreenState extends State<InboxChatScreen> {
             children: [
               Text(
                 "Report an Issue with Your Product",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
               Text(
                 "Let us know your issue, and we'll help resolve it as soon as possible.",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               SizedBox(height: 16),
               Divider(height: 1),
               SizedBox(height: 16),
-              CustomTextField(
-                hintText: 'Subject',
-                borderRadius: 30,
-              ),
+              CustomTextField(hintText: 'Subject', borderRadius: 30),
               SizedBox(height: 16),
-              CustomTextField(
-                hintText: 'Type Here',
-                borderRadius: 20,
-              ),
+              CustomTextField(hintText: 'Type Here', borderRadius: 20),
               SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -620,7 +673,7 @@ class _InboxChatScreenState extends State<InboxChatScreen> {
                   CustomElevatedButton(
                     text: "Submit",
                     borderRadius: 30,
-                    onPressed: () => Get.back(),
+                    onPressed: () => Get.to(ChatListScreen()),
                   ),
                 ],
               ),
@@ -636,7 +689,9 @@ class _InboxChatScreenState extends State<InboxChatScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text("Confirm Exchange"),
-        content: Text("Are you sure you want to mark this exchange as done?"),
+        content: Text(
+          "Are you sure you want to mark this exchange as done?",
+        ),
         actions: [
           CustomOutlinedButton(
             onPressed: () {
@@ -658,6 +713,11 @@ class _InboxChatScreenState extends State<InboxChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ChatController chatController = Get.find<ChatController>();
+
+    // Replace this with your actual logged-in user email from your auth logic
+    final currentUserEmail = "john@example.com";
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -680,11 +740,8 @@ class _InboxChatScreenState extends State<InboxChatScreen> {
                     ),
                   ),
                   Text(
-                    widget.name,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    name,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   Positioned(
                     right: 0,
@@ -720,91 +777,202 @@ class _InboxChatScreenState extends State<InboxChatScreen> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : error != null
-                ? Center(child: Text(error!))
-                : ListView.builder(
+          // Product Info Card
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              margin: EdgeInsets.all(0),
               padding: EdgeInsets.all(16),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final msg = messages[index];
-                final String text = msg['text'] ?? '';
-                final DateTime createdAt =
-                    DateTime.tryParse(msg['createdAt'] ?? '') ??
-                        DateTime.now();
-                final String timeFormatted =
-                DateFormat.jm().format(createdAt);
-
-                final msgUser = msg['msgByUserId'] ?? {};
-                final String senderId = msgUser['id'] ?? '';
-                final bool isSentByMe = senderId == widget.currentUserId;
-
-                return Align(
-                  alignment: isSentByMe
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 6),
-                    padding: EdgeInsets.all(12),
-                    constraints: BoxConstraints(
-                      maxWidth:
-                      MediaQuery.of(context).size.width * 0.7,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSentByMe
-                          ? Colors.blueAccent
-                          : Colors.grey.shade300,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
-                        bottomLeft: isSentByMe
-                            ? Radius.circular(12)
-                            : Radius.circular(0),
-                        bottomRight: isSentByMe
-                            ? Radius.circular(0)
-                            : Radius.circular(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+                border: Border.all(
+                  color: AppColors.secondaryColor,
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Formal Suit Set",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "Age: 18-18 years",
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Grey jeans for girls (10-13 years) easily used for a month. Comfortable and stylish, perfect for everyday wear—available for exchange",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "Location: location, dhuba",
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  ),
+                  SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      onPressed: () => _showConfirmationDialog(context),
+                      child: Text(
+                        "Exchange Done",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          text,
-                          style: TextStyle(
-                            color: isSentByMe
-                                ? Colors.white
-                                : Colors.black87,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          timeFormatted,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: isSentByMe
-                                ? Colors.white70
-                                : Colors.black54,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ),
-          // Message input
+
+          // Chat messages list
+          Expanded(
+            child: Obx(() {
+              final messages = chatController.messageResponse.value?.data.attributes.data ?? [];
+
+              return ListView.builder(
+                padding: EdgeInsets.all(16),
+                itemCount: messages.length,
+                reverse: true,
+                itemBuilder: (context, index) {
+                  final msg = messages[messages.length - 1 - index];
+                  final isCurrentUser = msg.msgByUserId.email == currentUserEmail;
+                  final messageText = msg.text ?? "";
+
+
+                  DateTime parsedDate;
+                  try {
+                    parsedDate = DateTime.parse((msg.createdAt ?? '').toString());
+                  } catch (_) {
+                    parsedDate = DateTime.now();
+                  }
+                  final messageTime = DateFormat('hh:mm a').format(parsedDate);
+
+
+
+                  final senderName = isCurrentUser ? currentUserEmail : (msg.msgByUserId.email ?? "Unknown");
+                  final senderSubtitle = isCurrentUser ? null : "Of Counsel";
+
+                  Widget messageBubble = Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(8),
+                        bottomLeft: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                    ),
+                    child: Text(messageText),
+                  );
+
+                  if (!isCurrentUser) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.grey.shade300,
+                              child: Icon(Icons.person, size: 16),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    senderName,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  if (senderSubtitle != null)
+                                    Text(
+                                      senderSubtitle,
+                                      style: TextStyle(fontSize: 10, color: Colors.grey),
+                                    ),
+                                  SizedBox(height: 4),
+                                  messageBubble,
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              messageTime,
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    senderName,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  messageBubble,
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              messageTime,
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                            SizedBox(width: 8),
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.grey.shade300,
+                              child: Icon(Icons.person, size: 16),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                      ],
+                    );
+                  }
+                },
+              );
+            }),
+          ),
+
+          // Message input area
           Container(
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(
-                  color: Colors.grey.shade300,
-                  width: 1,
-                ),
+                top: BorderSide(color: Colors.grey.shade300, width: 1),
               ),
             ),
             child: Row(
@@ -840,3 +1008,25 @@ class _InboxChatScreenState extends State<InboxChatScreen> {
   }
 }
 
+class ChatController extends GetxController {
+  Rxn<MessagesResponse> messageResponse = Rxn<MessagesResponse>();
+
+  fetchSingleMessage({required String conversationId}) async {
+    final token = await SharedPrefHelper().getData(AppConstants.token);
+    final response = await http.get(
+      Uri.parse(AppUrl.getSingleConversation(conversationId)),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    debugPrint(response.toString());
+
+    final responseBody = jsonDecode(response.body);
+    messageResponse.value = MessagesResponse.fromJson(responseBody);
+
+    debugPrint('Response body =====> ');
+    debugPrint(messageResponse.value?.data.attributes.totalResults.toString());
+  }
+}
