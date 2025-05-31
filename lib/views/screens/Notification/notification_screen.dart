@@ -176,13 +176,21 @@
 // }
 
 
+
+///todo:: connecting the api
+///
+///
+
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
+import 'package:html_unescape/html_unescape.dart';
+import 'package:intl/intl.dart';
 import '../../../Utils/app_url.dart';
-import '../../../Utils/app_constants.dart';
 import '../../../Utils/helper_shared_pref.dart';
+import '../../../Utils/app_constants.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -192,22 +200,22 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  late Future<List<NotificationItem>> _notificationsFuture;
   bool _hasUnreadNotifications = false;
+  bool _isLoading = true;
+  List<NotificationItem> _notifications = [];
 
   @override
   void initState() {
     super.initState();
-    _notificationsFuture = fetchNotifications();
+    fetchPrivacyPolicyNotification();
   }
 
-  Future<List<NotificationItem>> fetchNotifications() async {
+  Future<void> fetchPrivacyPolicyNotification() async {
     try {
       final token = SharedPrefHelper().getData(AppConstants.token);
 
-      final url = '${AppUrl.baseUrl}/notification'; // your actual endpoint
       final response = await http.get(
-        Uri.parse(url),
+        Uri.parse('${AppUrl.baseUrl}/privacy_policy'),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
@@ -217,45 +225,54 @@ class _NotificationScreenState extends State<NotificationScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        final List notificationsJson =
-            data['data']?['attributes']?['result'] ?? [];
+        final contentRaw = data['data']?['attributes']?['content'] ??
+            data['content'] ??
+            data['data']?['content'] ??
+            "No content available";
 
-        final notifications = notificationsJson
-            .map((json) => NotificationItem.fromJson(json))
-            .toList();
+        final updatedAtRaw = data['data']?['attributes']?['updatedAt'] ?? '';
+        final unescape = HtmlUnescape();
+        final content = unescape.convert(contentRaw);
+        final updatedAt = DateTime.tryParse(updatedAtRaw) ?? DateTime.now();
+        final formattedDate = DateFormat('MMM d, yyyy').format(updatedAt);
 
-        // Update unread flag
-        _hasUnreadNotifications =
-            notifications.any((notification) => !notification.isRead);
-
-        return notifications;
-      } else if (response.statusCode == 401) {
-        throw Exception('Session expired. Please login again.');
+        setState(() {
+          _notifications = [
+            NotificationItem(
+              id: 'privacy_policy',
+              title: 'Privacy Policy Updated',
+              content: 'Updated on $formattedDate\n\n$content',
+              priority: 'high',
+              isRead: false,
+            ),
+          ];
+          _hasUnreadNotifications = true;
+          _isLoading = false;
+        });
       } else {
-        throw Exception(
-            'Failed to load notifications: ${response.statusCode}');
+        debugPrint('Failed to load policy: ${response.statusCode}');
+        setState(() => _isLoading = false);
       }
     } catch (e) {
-      throw Exception('Failed to load notifications: ${e.toString()}');
+      debugPrint('Error: $e');
+      setState(() => _isLoading = false);
     }
   }
 
-  void _markAllAsRead(List<NotificationItem> notifications) {
+  void _markAllAsRead() {
     setState(() {
-      for (var notification in notifications) {
-        notification.isRead = true;
+      for (var n in _notifications) {
+        n.isRead = true;
       }
       _hasUnreadNotifications = false;
     });
-    // TODO: Add backend sync if needed
   }
 
-  void _markSingleAsRead(int index, List<NotificationItem> notifications) {
+  void _markSingleAsRead(int index) {
     setState(() {
-      notifications[index].isRead = true;
-      _hasUnreadNotifications = notifications.any((n) => !n.isRead);
+      _notifications[index].isRead = true;
+      _hasUnreadNotifications = _notifications.any((n) => !n.isRead);
     });
-    // TODO: Add backend sync if needed
   }
 
   @override
@@ -266,68 +283,45 @@ class _NotificationScreenState extends State<NotificationScreen> {
         centerTitle: true,
         elevation: 0,
         actions: [
-          if (_hasUnreadNotifications)
-            IconButton(
-              icon: const Icon(Icons.mark_email_read_outlined),
-              tooltip: 'Mark all as read',
-              onPressed: () async {
-                // Need to refresh the list here
-                final notifications = await _notificationsFuture;
-                _markAllAsRead(notifications);
-              },
-            ),
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: _markAllAsRead,
+                tooltip: 'Mark all as read',
+              ),
+              if (_hasUnreadNotifications)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    width: 12,
+                    height: 12,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
-      body: FutureBuilder<List<NotificationItem>>(
-        future: _notificationsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      snapshot.error.toString(),
-                      style: const TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _notificationsFuture = fetchNotifications();
-                        });
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          } else if (snapshot.hasData) {
-            final notifications = snapshot.data!;
-            if (notifications.isEmpty) {
-              return const Center(child: Text('No notifications'));
-            }
-            return ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return NotificationTile(
-                  message: notification.title,
-                  time: notification.content.trim(),
-                  iconPath: 'assets/icons/unread_notification_icon.svg',
-                  isRead: notification.isRead,
-                  onTap: () => _markSingleAsRead(index, notifications),
-                );
-              },
-            );
-          }
-          return const Center(child: Text('No data available'));
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _notifications.isEmpty
+          ? const Center(child: Text('No notifications found.'))
+          : ListView.builder(
+        itemCount: _notifications.length,
+        itemBuilder: (context, index) {
+          final notification = _notifications[index];
+          return NotificationTile(
+            message: notification.title,
+            time: notification.content,
+            iconPath: 'assets/icons/unread_notification_icon.svg',
+            isRead: notification.isRead,
+            onTap: () => _markSingleAsRead(index),
+          );
         },
       ),
     );
@@ -338,26 +332,16 @@ class NotificationItem {
   final String id;
   final String title;
   final String content;
-  final String status;
+  final String priority;
   bool isRead;
 
   NotificationItem({
     required this.id,
     required this.title,
     required this.content,
-    required this.status,
+    required this.priority,
     required this.isRead,
   });
-
-  factory NotificationItem.fromJson(Map<String, dynamic> json) {
-    return NotificationItem(
-      id: json['_id'] ?? '',
-      title: json['title'] ?? '',
-      content: json['content'] ?? '',
-      status: json['status'] ?? 'unread',
-      isRead: (json['status']?.toString().toLowerCase() == 'read'),
-    );
-  }
 }
 
 class NotificationTile extends StatelessWidget {
@@ -390,6 +374,8 @@ class NotificationTile extends StatelessWidget {
                 iconPath,
                 width: 24,
                 height: 24,
+                placeholderBuilder: (context) =>
+                const Icon(Icons.notifications),
               ),
             if (!isRead) const SizedBox(width: 16),
             Expanded(
@@ -400,13 +386,15 @@ class NotificationTile extends StatelessWidget {
                     message,
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: isRead ? FontWeight.normal : FontWeight.w500,
+                      fontWeight:
+                      isRead ? FontWeight.normal : FontWeight.w500,
                       color: isRead ? Colors.grey[600] : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     time,
+                    textAlign: TextAlign.justify,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[400],
@@ -421,5 +409,8 @@ class NotificationTile extends StatelessWidget {
     );
   }
 }
+
+
+
 
 

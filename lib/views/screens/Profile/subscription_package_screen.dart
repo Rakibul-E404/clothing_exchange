@@ -1,7 +1,5 @@
 import 'package:clothing_exchange/utils/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class SubscriptionPackageScreen extends StatelessWidget {
   const SubscriptionPackageScreen({super.key});
@@ -10,7 +8,6 @@ class SubscriptionPackageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: ()=> Get.back(), icon: Icon(Icons.arrow_back_ios)),
         title: Text("Subscription Package",style: TextStyle(color: AppColors.secondary_text_color),),
         backgroundColor: AppColors.secondaryColor,
       ),

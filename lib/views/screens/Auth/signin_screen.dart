@@ -1,6 +1,7 @@
 // import 'package:clothing_exchange/views/screens/Auth/signup_screen.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
+// import 'package:lottie/lottie.dart';
 // import '../../../images/assets_path.dart';
 // import '../../../utils/Services/api_auth.dart';
 // import '../../../utils/colors.dart';
@@ -23,6 +24,9 @@
 //   final AuthService _authService = AuthService();
 //   bool _isPasswordVisible = false;
 //   bool _isLoading = false;
+//
+//   // Variable to store userId after login
+//   String? _userId;
 //
 //   Future<void> _signInUi() async {
 //     final email = _emailController.text.trim();
@@ -59,6 +63,12 @@
 //           colorText: Colors.white,
 //         );
 //       } else {
+//         // Save userId from response
+//         _userId = response['userId']; // Adjust key if needed
+//
+//         print('Logged in userId: $_userId');
+//
+//         // Navigate to home screen
 //         Get.to(() => HomeScreen());
 //       }
 //     } catch (e) {
@@ -187,7 +197,7 @@
 //                           onPressed: _isLoading ? null : _signInUi,
 //                           color: AppColors.custom_Elevated_Button_Color,
 //                           textColor:
-//                               AppColors.Custom_Outlined_Button_Text_Color,
+//                           AppColors.Custom_Outlined_Button_Text_Color,
 //                           borderRadius: 32.0,
 //                           padding: const EdgeInsets.symmetric(vertical: 16),
 //                           elevation: 0.0,
@@ -195,14 +205,14 @@
 //                               18, AppColors.secondary_text_color),
 //                           child: _isLoading
 //                               ? const SizedBox(
-//                                   height: 24,
-//                                   width: 24,
-//                                   child: CircularProgressIndicator(
-//                                     strokeWidth: 2,
-//                                     valueColor: AlwaysStoppedAnimation<Color>(
-//                                         Colors.white),
-//                                   ),
-//                                 )
+//                             height: 24,
+//                             width: 24,
+//                             child: CircularProgressIndicator(
+//                               strokeWidth: 2,
+//                               valueColor: AlwaysStoppedAnimation<Color>(
+//                                   Colors.white),
+//                             ),
+//                           )
 //                               : null,
 //                         ),
 //                       ),
@@ -249,18 +259,13 @@
 //   }
 // }
 
-
-
-///
-///
-/// todo: storing the userId
-///
+///todo:: setting the lottie
 ///
 
-
-import 'package:clothing_exchange/views/screens/Auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
+
 import '../../../images/assets_path.dart';
 import '../../../utils/Services/api_auth.dart';
 import '../../../utils/colors.dart';
@@ -269,6 +274,7 @@ import '../../widget/customElevatedButton.dart';
 import '../../widget/customTextField.dart';
 import '../Home/home_screen.dart';
 import 'forgot_password_screen.dart';
+import 'signup_screen.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -283,8 +289,6 @@ class _SigninScreenState extends State<SigninScreen> {
   final AuthService _authService = AuthService();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
-
-  // Variable to store userId after login
   String? _userId;
 
   Future<void> _signInUi() async {
@@ -322,12 +326,8 @@ class _SigninScreenState extends State<SigninScreen> {
           colorText: Colors.white,
         );
       } else {
-        // Save userId from response
-        _userId = response['userId']; // Adjust key if needed
-
+        _userId = response['userId'];
         print('Logged in userId: $_userId');
-
-        // Navigate to home screen
         Get.to(() => HomeScreen());
       }
     } catch (e) {
@@ -348,6 +348,7 @@ class _SigninScreenState extends State<SigninScreen> {
   Widget build(BuildContext context) {
     _emailController.text = 'smrakibulalam586@gmail.com';
     _passwordController.text = '2wsxzaq1';
+
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -369,7 +370,9 @@ class _SigninScreenState extends State<SigninScreen> {
                             Text(
                               "Sign in to your account",
                               style: AppTextFont.bold(
-                                  23, AppColors.primary_text_color),
+                                23,
+                                AppColors.primary_text_color,
+                              ),
                             ),
                             Positioned(
                               bottom: -4,
@@ -388,14 +391,18 @@ class _SigninScreenState extends State<SigninScreen> {
                         child: Text(
                           'Welcome! Sign in to your account to continue.',
                           style: AppTextFont.regular(
-                              14, AppColors.primary_text_color),
+                            14,
+                            AppColors.primary_text_color,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 40),
                       Text(
                         'Your Email',
                         style: AppTextFont.regular(
-                            18, AppColors.primary_text_color),
+                          18,
+                          AppColors.primary_text_color,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       CustomTextField(
@@ -410,7 +417,9 @@ class _SigninScreenState extends State<SigninScreen> {
                       Text(
                         'Password',
                         style: AppTextFont.regular(
-                            18, AppColors.primary_text_color),
+                          18,
+                          AppColors.primary_text_color,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       CustomTextField(
@@ -444,37 +453,42 @@ class _SigninScreenState extends State<SigninScreen> {
                           child: Text(
                             'Forgot Password?',
                             style: AppTextFont.regular(
-                                18, AppColors.primary_text_color),
+                              18,
+                              AppColors.primary_text_color,
+                            ),
                           ),
                         ),
                       ),
                       const Spacer(),
-                      SizedBox(
-                        width: double.infinity,
-                        child: CustomElevatedButton(
-                          text: 'Sign In',
-                          onPressed: _isLoading ? null : _signInUi,
-                          color: AppColors.custom_Elevated_Button_Color,
-                          textColor:
-                          AppColors.Custom_Outlined_Button_Text_Color,
-                          borderRadius: 32.0,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          elevation: 0.0,
-                          textStyle: AppTextFont.regular(
-                              18, AppColors.secondary_text_color),
-                          child: _isLoading
-                              ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white),
+                      _isLoading
+                          ? Center(
+                            child: SizedBox(
+                              height: 200,
+                              width: 200,
+                              child: Lottie.asset(
+                                'assets/animations/loading.json',
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           )
-                              : null,
-                        ),
-                      ),
+                          : SizedBox(
+                            width: double.infinity,
+                            child: CustomElevatedButton(
+                              text: 'Sign In',
+                              onPressed: _isLoading ? null : _signInUi,
+                              color: AppColors.custom_Elevated_Button_Color,
+                              textColor:
+                                  AppColors.Custom_Outlined_Button_Text_Color,
+                              borderRadius: 32.0,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              elevation: 0.0,
+                              textStyle: AppTextFont.regular(
+                                18,
+                                AppColors.secondary_text_color,
+                              ),
+                              child: null,
+                            ),
+                          ),
                       const SizedBox(height: 24),
                       Center(
                         child: Row(
@@ -483,7 +497,9 @@ class _SigninScreenState extends State<SigninScreen> {
                             Text(
                               "Don't have an account? ",
                               style: AppTextFont.regular(
-                                  16, AppColors.primary_text_color),
+                                16,
+                                AppColors.primary_text_color,
+                              ),
                             ),
                             TextButton(
                               onPressed: () {
@@ -496,8 +512,9 @@ class _SigninScreenState extends State<SigninScreen> {
                               child: Text(
                                 'Sign up',
                                 style: TextStyle(
-                                  color: AppColors
-                                      .Custom_Outlined_Button_Text_Color,
+                                  color:
+                                      AppColors
+                                          .Custom_Outlined_Button_Text_Color,
                                   fontWeight: FontWeight.normal,
                                   fontSize: 16,
                                 ),
