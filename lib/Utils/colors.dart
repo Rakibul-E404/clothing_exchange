@@ -11,7 +11,7 @@ class AppColors {
   static const Color hover_color = Color(0xFFE0D2C0);//used in app
   static const Color icon_bg_circleAvater_color = Color(0xFFf2e5d7);//used in app
   static const Color background = Color(0xFFFFFFFF);//used in app
-  static const Color splashScreenBackground = Color(0xFFf7eee7);//used in app
+  static const Color splashScreenBackground = Color(0xFFf7eee7   );//used in app
   static const Color custom_Elevated_Button_Color = Color(0xFF806107);//used in app
   static const Color custom_Elevated_Button_Text_Color = Color(0xFFFAF4EF);//used in app
   static const Color customElevatedButtonBorderColor = Color(0xFF806107);//used in app
@@ -23,4 +23,7 @@ class AppColors {
   static const Color secondary_text_color = Color(0xFFFFFFFF);//used in app
   static const Color secondary_text_color2 = Color(0xFFAB7843);//used in app
   static const Color profilePageIconsColor = Color(0xFF717777);//used in app
+
+
+
 }
