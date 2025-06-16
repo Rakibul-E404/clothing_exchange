@@ -32,45 +32,48 @@ class _SignUPScreenState extends State<SignUPScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
 
   Future<void> _register() async {
+    // Check if terms are accepted
     if (!_isTermsAccepted) {
       Get.snackbar('Error', 'Please accept the terms and conditions.',
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
+debugPrint('1');
+    // Get the input values
     String username = _usernameController.text;
     String email = _emailController.text;
     String phone = _phoneController.text;
     String password = _passwordController.text;
     String confirmPassword = _confirmPasswordController.text;
 
+    // Check if all fields are filled
     if (username.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       Get.snackbar('Error', 'Please fill all fields.',
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
+    // Check if passwords match
     if (password != confirmPassword) {
       Get.snackbar('Error', 'Passwords do not match.',
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
+    // Call the registration service
     var result = await _authService.registerUser(
       username, email, phone, password, confirmPassword,
     );
 
+    // Handle any errors from the registration process
     if (result.containsKey('error')) {
-      Get.snackbar('Error', result['error'], snackPosition: SnackPosition.BOTTOM);
+      return ;
+      // Get.snackbar('Error', result['error'], snackPosition: SnackPosition.BOTTOM);
+    } else {
+      // If successful, navigate to email verification screen
+      Get.to(VerifyEmailScreen(email: _emailController.text));
     }
-    // else {
-    //   Future.delayed(const Duration(milliseconds: 100), () {
-    //     Get.to(VerifyEmailScreen(email: _emailController.text)); // Navigate to VerifyEmailScreen
-    //   });
-    //
-    //   // Get.to(VerifyEmailScreen(email: _emailController.text)); // Navigate to VerifyEmailScreen
-    //   // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=> VerifyEmailScreen(email: _emailController.text)));
-    // }
   }
 
   @override
@@ -255,10 +258,10 @@ class _SignUPScreenState extends State<SignUPScreen> {
                   width: double.infinity,
                   child: CustomElevatedButton(
                     text: 'Sign Up',
-                    onPressed: ()=> {
-                      _register(),
-                      Get.to(VerifyEmailScreen(email: _emailController.text)),
-                    },//_register,
+                    onPressed: () {
+                      // Call the registration function and navigate after validation
+                      _register();
+                    },
                     color: _isTermsAccepted
                         ? AppColors.custom_Elevated_Button_Color
                         : AppColors.custom_Elevated_Button_Color.withOpacity(0.6),

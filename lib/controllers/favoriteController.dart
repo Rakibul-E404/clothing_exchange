@@ -29,6 +29,7 @@ class FavoriteController extends GetxController {
   }
 
   Future<void> fetchFavorites() async {
+    debugPrint('Fetcging Fav');
     isLoading.value = true;
     try {
       final headers = await _getHeaders();

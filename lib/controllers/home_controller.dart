@@ -8,7 +8,9 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class HomeController extends GetxController {
-  RxList<Product> productList = <Product>[].obs;
+  final RxList<Product> productList = <Product>[].obs;
+  final RxBool isLoading = true.obs;
+  final RxString errorMessage = ''.obs;
 
   @override
   Future<void> onInit() async {
@@ -16,8 +18,11 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
-  fetchProducts() async {
+  Future<void> fetchProducts() async {
     try {
+      isLoading(true);
+      errorMessage('');
+
       final token = SharedPrefHelper().getData(AppConstants.token);
       final response = await http.get(
         Uri.parse(AppUrl.allProduct),
@@ -28,23 +33,28 @@ class HomeController extends GetxController {
       );
 
       log('API Response: ${response.body}');
-      final jsonMap = jsonDecode(response.body);
-      final List<dynamic> productListJson =
-          jsonMap['data']['attributes']['data'];
 
-      productList.value =
-          productListJson.map<Product>((json) {
-            final product = Product.fromJson(json);
-            log(
-              'Loaded Product show: ${product.title} | Age: ${product.age} | Size: ${product.size} | Gender: ${product.gender}',
-            );
-            return product;
-          }).toList();
+      if (response.statusCode == 200) {
+        final jsonMap = jsonDecode(response.body);
+        final List<dynamic> productListJson = jsonMap['data']['attributes']['data'];
 
-      log('Total products loaded: ${productList.length}');
+        productList.value = productListJson.map<Product>((json) {
+          final product = Product.fromJson(json);
+          log('Loaded Product: ${product.title} | Age: ${product.age}');
+          return product;
+        }).toList();
+      } else {
+        errorMessage('Failed to load products (${response.statusCode})');
+      }
     } catch (e) {
-      // checking for error
       log('Error fetching products: $e');
+      errorMessage('Error loading products: ${e.toString()}');
+    } finally {
+      isLoading(false);
     }
+  }
+
+  Future<void> refreshProducts() async {
+    await fetchProducts();
   }
 }

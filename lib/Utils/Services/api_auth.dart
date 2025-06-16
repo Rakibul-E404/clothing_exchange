@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:clothing_exchange/Utils/app_constants.dart';
 import 'package:clothing_exchange/Utils/app_url.dart';
 import 'package:clothing_exchange/Utils/helper_shared_pref.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
@@ -28,11 +31,18 @@ class AuthService {
           'password': password,
         }),
       );
+      debugPrint('2');
+      debugPrint(response.body);
 
-      if (response.statusCode == 200) {
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('3');
         return jsonDecode(response.body);
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(response.body);
+
+        final pop = jsonDecode(response.body);
+        Get.snackbar('Error', pop['message'], snackPosition: SnackPosition.BOTTOM);
         return {'error': errorResponse['message'] ?? 'Failed to register'};
       }
     } catch (e) {
@@ -46,10 +56,7 @@ class AuthService {
       final response = await http.post(
         Uri.parse(AppUrl.authLogin),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
+        body: jsonEncode({'email': email, 'password': password}),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -73,15 +80,14 @@ class AuthService {
 
   // Verify Email
   Future<Map<String, dynamic>> verifyEmail(
-      String email, String oneTimeCode) async {
+    String email,
+    String oneTimeCode,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse(AppUrl.verifyEmail),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'oneTimeCode': oneTimeCode,
-        }),
+        body: jsonEncode({'email': email, 'oneTimeCode': oneTimeCode}),
       );
 
       if (response.statusCode == 200) {
@@ -112,13 +118,11 @@ class AuthService {
 
   // Reset Password
 
-
   Future<Map<String, dynamic>> resetPassword({
     required String email,
     required String newPassword,
     required String confirmPassword,
-    required String
-        otp,
+    required String otp,
   }) async {
     try {
       if (newPassword != confirmPassword) {
@@ -128,10 +132,7 @@ class AuthService {
       final response = await http.post(
         Uri.parse(AppUrl.resetPassword),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': newPassword,
-        }),
+        body: jsonEncode({'email': email, 'password': newPassword}),
       );
 
       if (response.statusCode == 200) {
@@ -139,18 +140,11 @@ class AuthService {
       } else {
         final Map<String, dynamic> errorResponse = jsonDecode(response.body);
         return {
-          'error': errorResponse['message'] ?? 'Failed to reset password'
+          'error': errorResponse['message'] ?? 'Failed to reset password',
         };
       }
     } catch (e) {
       return {'error': 'An error occurred: $e'};
     }
   }
-
-
-
-
-
-
-
 }

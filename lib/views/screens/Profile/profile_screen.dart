@@ -9,13 +9,16 @@ import 'package:clothing_exchange/views/screens/Settings/settings_screen.dart';
 import 'package:clothing_exchange/views/widget/CustomOutlinedButton.dart';
 import 'package:clothing_exchange/views/widget/customElevatedButton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../Utils/Services/user_service.dart';
+import '../../../Utils/app_url.dart';
 import '../../../utils/colors.dart';
 import '../Product/my_product_history.dart';
+import '../Chat/chat_list_screen.dart';
+import '../Wishlist/wishlist_screen.dart';
+import '../Product/create_post_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,7 +29,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? userName;
+  String? userProfileImage;
   bool isLoading = true;
+  int _currentIndex = 4; // Set to 4 for Profile
 
   @override
   void initState() {
@@ -40,13 +45,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (userData != null && userData['name'] != null) {
       setState(() {
         userName = userData['name'];
+        userProfileImage = userData['image']; // Fetching user image
         isLoading = false;
       });
     } else {
       setState(() {
         userName = 'Unknown User';
+        userProfileImage = null; // No image found, set to null
         isLoading = false;
       });
+    }
+  }
+
+  BottomNavigationBarItem _buildNavBarItem(String iconPath, String label) {
+    return BottomNavigationBarItem(
+      icon: SvgPicture.asset(
+        iconPath,
+        colorFilter: ColorFilter.mode(
+          _currentIndex == labelToIndex(label)
+              ? AppColors.secondaryColor
+              : AppColors.onSecondary,
+          BlendMode.srcIn,
+        ),
+        width: 35,
+        height: 35,
+      ),
+      activeIcon: CircleAvatar(
+        backgroundColor: AppColors.icon_bg_circleAvater_color,
+        child: SvgPicture.asset(
+          iconPath,
+          colorFilter: const ColorFilter.mode(
+            AppColors.secondaryColor,
+            BlendMode.srcIn,
+          ),
+          width: 35,
+          height: 35,
+        ),
+      ),
+      label: label,
+    );
+  }
+
+  int labelToIndex(String label) {
+    switch (label) {
+      case 'Home': return 0;
+      case 'Wishlist': return 1;
+      case 'Post': return 2;
+      case 'Chat': return 3;
+      case 'Profile': return 4;
+      default: return 0;
     }
   }
 
@@ -54,6 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'Profile',
           style: GoogleFonts.outfit(
@@ -63,12 +111,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () => Get.offAll(HomeScreen(), arguments: 0),
-          icon: Icon(Icons.arrow_back_ios),
-        ),
       ),
-      body: SingleChildScrollView(  // Wrap the entire body with SingleChildScrollView
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -78,12 +122,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Center(
                 child: Column(
                   children: [
+
                     Container(
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(20), // Rounded corners of the container
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.3),
@@ -91,15 +136,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             offset: Offset(0, 2),
                           )
                         ],
-                      ),
-                      child: Center(
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.grey[300],
-                          child: Icon(Icons.person, size: 32, color: Colors.grey[600]),
+                        border: Border.all( // Add border
+                          color: Colors.grey.withOpacity(0.5), // Border color
+                          width: 2, // Border width
                         ),
                       ),
+                      child: ClipRRect( // Clip the image with rounded corners
+                        borderRadius: BorderRadius.circular(20), // Rounded corners for the image
+                        child: userProfileImage != null && userProfileImage!.isNotEmpty
+                            ? Image.network(
+                          '${AppUrl.imageBaseUrl}${userProfileImage!}',
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 100,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                    : null,
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.person, size: 32, color: Colors.grey);
+                          },
+                        )
+                            : Icon(Icons.person, size: 32, color: Colors.grey[600]),
+                      ),
                     ),
+
+
+
+                    // Container(
+                    //   width: 100,
+                    //   height: 100,
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.grey[200],
+                    //     borderRadius: BorderRadius.circular(20),
+                    //     boxShadow: [
+                    //       BoxShadow(
+                    //         color: Colors.grey.withOpacity(0.3),
+                    //         blurRadius: 6,
+                    //         offset: Offset(0, 2),
+                    //       )
+                    //     ],
+                    //   ),
+                    //   child: userProfileImage != null && userProfileImage!.isNotEmpty
+                    //       ? Image.network(
+                    //         '${AppUrl.imageBaseUrl}${userProfileImage!}',
+                    //         fit: BoxFit.cover,
+                    //         width: 60,
+                    //         height: 60,
+                    //         loadingBuilder: (context, child, loadingProgress) {
+                    //           if (loadingProgress == null) {
+                    //             return child;
+                    //           }
+                    //           return Center(
+                    //             child: CircularProgressIndicator(
+                    //               value: loadingProgress.expectedTotalBytes != null
+                    //                   ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                    //                   : null,
+                    //             ),
+                    //           );
+                    //         },
+                    //         errorBuilder: (context, error, stackTrace) {
+                    //           return const Icon(Icons.person, size: 32, color: Colors.grey);
+                    //         },
+                    //       )
+                    //       : Icon(Icons.person, size: 32, color: Colors.grey[600]),
+                    // ),
                     SizedBox(height: 16),
                     isLoading
                         ? CircularProgressIndicator()
@@ -169,6 +278,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.bottom_navigation_bg_color,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentIndex,
+        selectedItemColor: AppColors.secondaryColor,
+        unselectedItemColor: AppColors.onSecondary,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        onTap: (index) {
+          if (_currentIndex == index) return;
+          switch (index) {
+            case 0:
+              Get.off(() => HomeScreen());
+              break;
+            case 1:
+              Get.off(() => WishlistScreen());
+              break;
+            case 2:
+              Get.off(() => const CreatePostPage());
+              break;
+            case 3:
+              Get.off(() => ChatListScreen());
+              break;
+            case 4:
+            // Already on profile screen
+              break;
+            default:
+              break;
+          }
+        },
+        items: [
+          _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
+          _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
+          _buildNavBarItem('assets/icons/post_icon.svg', 'Post'),
+          _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat'),
+          _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile'),
+        ],
       ),
     );
   }
@@ -266,5 +414,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
-

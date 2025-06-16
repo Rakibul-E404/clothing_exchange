@@ -4,17 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../Utils/app_constants.dart';
 import '../../../Utils/app_url.dart';
 import '../../../Utils/helper_shared_pref.dart';
 import 'inbox_chat_screen.dart';
+import '../../../Utils/colors.dart';
+import '../Profile/profile_screen.dart';
+import '../Wishlist/wishlist_screen.dart';
+import '../Product/create_post_screen.dart';
 
 class ChatListScreen extends StatelessWidget {
   ChatListScreen({super.key});
 
-  // Replace {{URL}} with your actual API base URL
   final String apiUrl = '${AppUrl.baseUrl}/conversation/conversation_list';
+  int _currentIndex = 3; // Set to 3 for Chat
 
   Future<String?> _getToken() async {
     final token = await SharedPrefHelper().getData(AppConstants.token);
@@ -50,9 +54,9 @@ class ChatListScreen extends StatelessWidget {
           final formattedTime = DateFormat.jm().format(createdAt);
 
           final String avatarUrl =
-              chatPartner['image'] != null && chatPartner['image'].isNotEmpty
-                  ? '${AppUrl.imageBaseUrl}' + chatPartner['image']
-                  : 'assets/default_avatar.png';
+          chatPartner['image'] != null && chatPartner['image'].isNotEmpty
+              ? '${AppUrl.imageBaseUrl}' + chatPartner['image']
+              : 'assets/default_avatar.png';
           debugPrint(avatarUrl.toString());
 
           return {
@@ -76,19 +80,54 @@ class ChatListScreen extends StatelessWidget {
     }
   }
 
+  BottomNavigationBarItem _buildNavBarItem(String iconPath, String label) {
+    return BottomNavigationBarItem(
+      icon: SvgPicture.asset(
+        iconPath,
+        colorFilter: ColorFilter.mode(
+          _currentIndex == labelToIndex(label)
+              ? AppColors.secondaryColor
+              : AppColors.onSecondary,
+          BlendMode.srcIn,
+        ),
+        width: 35,
+        height: 35,
+      ),
+      activeIcon: CircleAvatar(
+        backgroundColor: AppColors.icon_bg_circleAvater_color,
+        child: SvgPicture.asset(
+          iconPath,
+          colorFilter: const ColorFilter.mode(
+            AppColors.secondaryColor,
+            BlendMode.srcIn,
+          ),
+          width: 35,
+          height: 35,
+        ),
+      ),
+      label: label,
+    );
+  }
+
+  int labelToIndex(String label) {
+    switch (label) {
+      case 'Home': return 0;
+      case 'Wishlist': return 1;
+      case 'Post': return 2;
+      case 'Chat': return 3;
+      case 'Profile': return 4;
+      default: return 0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ChatController chatController = Get.put(ChatController());
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Chats'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Get.off(const HomeScreen(), arguments: 0);
-          },
-        ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchChatList(),
@@ -112,13 +151,13 @@ class ChatListScreen extends StatelessWidget {
 
               return ListTile(
                 leading:
-                    chat['avatar'].toString().startsWith('assets/')
-                        ? CircleAvatar(
-                          backgroundImage: AssetImage(chat['avatar']),
-                        )
-                        : CircleAvatar(
-                          backgroundImage: NetworkImage(chat['avatar']),
-                        ),
+                chat['avatar'].toString().startsWith('assets/')
+                    ? CircleAvatar(
+                  backgroundImage: AssetImage(chat['avatar']),
+                )
+                    : CircleAvatar(
+                  backgroundImage: NetworkImage(chat['avatar']),
+                ),
                 title: Text(chat['name']),
                 subtitle: Text(chat['message']),
                 trailing: Column(
@@ -157,12 +196,45 @@ class ChatListScreen extends StatelessWidget {
           );
         },
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.bottom_navigation_bg_color,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentIndex,
+        selectedItemColor: AppColors.secondaryColor,
+        unselectedItemColor: AppColors.onSecondary,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        onTap: (index) {
+          if (_currentIndex == index) return;
+          switch (index) {
+            case 0:
+              Get.off(() => HomeScreen());
+              break;
+            case 1:
+              Get.off(() => WishlistScreen());
+              break;
+            case 2:
+              Get.off(() => const CreatePostPage());
+              break;
+            case 3:
+            // Already on chat screen
+              break;
+            case 4:
+              Get.off(() => const ProfileScreen());
+              break;
+            default:
+              break;
+          }
+        },
+        items: [
+          _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
+          _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
+          _buildNavBarItem('assets/icons/post_icon.svg', 'Post'),
+          _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat'),
+          _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile'),
+        ],
+      ),
     );
   }
 }
-
-///
-///
-/// todo:: getting the conversationID
-///
-///
