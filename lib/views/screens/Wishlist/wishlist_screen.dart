@@ -1,3 +1,4 @@
+import 'package:clothing_exchange/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -25,6 +26,7 @@ class WishlistScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text('Wishlist'),
         backgroundColor: AppColors.primaryColor,
+        automaticallyImplyLeading: false,
       ),
       body: Obx(() {
         final items = favoriteController.favoriteItems;
@@ -33,7 +35,7 @@ class WishlistScreen extends StatelessWidget {
             : _buildWishlistContent(items);
       }),
       bottomNavigationBar: Obx(
-            () => BottomNavigationBar(
+        () => BottomNavigationBar(
           backgroundColor: AppColors.bottom_navigation_bg_color,
           type: BottomNavigationBarType.fixed,
           currentIndex: currentIndex.value,
@@ -61,6 +63,7 @@ class WishlistScreen extends StatelessWidget {
 
     switch (index) {
       case 0:
+        Get.find<HomeController>().fetchProducts();
         Get.offAll(() => HomeScreen());
         break;
       case 1:
@@ -141,7 +144,11 @@ class WishlistScreen extends StatelessWidget {
     );
   }
 
-  BottomNavigationBarItem _buildNavBarItem(String iconPath, String label, int index) {
+  BottomNavigationBarItem _buildNavBarItem(
+    String iconPath,
+    String label,
+    int index,
+  ) {
     return BottomNavigationBarItem(
       icon: SvgPicture.asset(
         iconPath,

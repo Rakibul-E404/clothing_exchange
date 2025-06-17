@@ -81,25 +81,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void applyFilters() {
     final List<Product> allProducts = homeController.productList;
-    final List<Product> filtered = allProducts.where((product) {
-      final bool matchesAge = selectedAgeRange == null ||
-          product.age.replaceAll(RegExp(r'[^0-9-]'), '').contains(
-            selectedAgeRange!.replaceAll(RegExp(r'[^0-9-]'), ''),
-          );
+    final List<Product> filtered =
+        allProducts.where((product) {
+          final bool matchesAge =
+              selectedAgeRange == null ||
+              product.age
+                  .replaceAll(RegExp(r'[^0-9-]'), '')
+                  .contains(
+                    selectedAgeRange!.replaceAll(RegExp(r'[^0-9-]'), ''),
+                  );
 
-      final bool matchesSize = selectedSize == null ||
-          product.size.toLowerCase().startsWith(
-            selectedSize!.toLowerCase()[0],
-          );
+          final bool matchesSize =
+              selectedSize == null ||
+              product.size.toLowerCase().startsWith(
+                selectedSize!.toLowerCase()[0],
+              );
 
-      final bool matchesGender = selectedGender == null ||
-          product.gender.toLowerCase() == selectedGender!.toLowerCase() ||
-          product.gender.toLowerCase() == '${selectedGender!.toLowerCase()}s' ||
-          (selectedGender == 'boys' && product.gender.toLowerCase() == 'boy') ||
-          (selectedGender == 'girls' && product.gender.toLowerCase() == 'girl');
+          final bool matchesGender =
+              selectedGender == null ||
+              product.gender.toLowerCase() == selectedGender!.toLowerCase() ||
+              product.gender.toLowerCase() ==
+                  '${selectedGender!.toLowerCase()}s' ||
+              (selectedGender == 'boys' &&
+                  product.gender.toLowerCase() == 'boy') ||
+              (selectedGender == 'girls' &&
+                  product.gender.toLowerCase() == 'girl');
 
-      return matchesAge && matchesSize && matchesGender;
-    }).toList();
+          return matchesAge && matchesSize && matchesGender;
+        }).toList();
 
     filteredProducts.value = filtered;
   }
@@ -109,8 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
       return searchController.searchResults;
     }
     return (selectedAgeRange != null ||
-        selectedSize != null ||
-        selectedGender != null)
+            selectedSize != null ||
+            selectedGender != null)
         ? filteredProducts
         : homeController.productList;
   }
@@ -119,19 +128,20 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => FilterBottomSheet(
-        selectedAgeRange: selectedAgeRange,
-        selectedSize: selectedSize,
-        selectedGender: selectedGender,
-        onApply: (age, size, gender) {
-          setState(() {
-            selectedAgeRange = age;
-            selectedSize = size;
-            selectedGender = gender;
-            applyFilters();
-          });
-        },
-      ),
+      builder:
+          (_) => FilterBottomSheet(
+            selectedAgeRange: selectedAgeRange,
+            selectedSize: selectedSize,
+            selectedGender: selectedGender,
+            onApply: (age, size, gender) {
+              setState(() {
+                selectedAgeRange = age;
+                selectedSize = size;
+                selectedGender = gender;
+                applyFilters();
+              });
+            },
+          ),
     );
   }
 
@@ -140,17 +150,20 @@ class _HomeScreenState extends State<HomeScreen> {
     final fullImageUrl = '${AppUrl.imageBaseUrl}${product.image}';
 
     return GestureDetector(
-      onTap: () => Get.to(
+      onTap:
+          () => Get.to(
             () => ProductDetailsScreen(
-          title: product.title,
-          age: product.age,
-          size: product.size,
-          gender: product.gender,
-          location: product.location,
-          imageUrl: fullImageUrl,
-          price: '',
-        ),
-      ),
+              title: product.title,
+              age: product.age,
+              size: product.size,
+              gender: product.gender,
+              location: product.location,
+              imageUrl: fullImageUrl,
+              description: product.description,
+              productId: product.id,
+              // price: '',
+            ),
+          ),
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -165,15 +178,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: CachedNetworkImage(
                       imageUrl: fullImageUrl,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(color: Colors.white),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey[200],
-                        child: const Icon(Icons.error, color: Colors.grey),
-                      ),
+                      placeholder:
+                          (context, url) => Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(color: Colors.white),
+                          ),
+                      errorWidget:
+                          (context, url, error) => Container(
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.error, color: Colors.grey),
+                          ),
                     ),
                   ),
                 ),
@@ -206,29 +221,44 @@ class _HomeScreenState extends State<HomeScreen> {
             Positioned(
               top: 10,
               right: 10,
-              child: Obx(() => IconButton(
-                icon: Icon(
-                  isFavorite.value ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite.value ? Colors.red : AppColors.secondaryColor,
+              child: Obx(
+                () => IconButton(
+                  icon: Icon(
+                    // isFavorite.value ? Icons.favorite : Icons.favorite_border,
+                    product.wishlistStatus
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color:
+                        isFavorite.value
+                            ? Colors.red
+                            : AppColors.secondaryColor,
+                  ),
+                  onPressed: () async {
+                    // isFavorite.toggle();
+                    await favoriteController.addFavorite(product.id) ;
+                    // product.wishlistStatus
+                    //     ? await favoriteController.removeFavorite(product.id)
+                    //     : await favoriteController.addFavorite(product.id);
+
+                    // try {
+                    //   if (isFavorite.value) {
+                    //     await favoriteController.addFavorite(product.id);
+                    //   } else {
+                    //     final favItem = favoriteController
+                    //         .getFavoriteItemByProductId(product.id);
+                    //     if (favItem != null) {
+                    //       await favoriteController.removeFavorite(
+                    //         favItem.favoriteId,
+                    //       );
+                    //     }
+                    //   }
+                    // } catch (e) {
+                    //   isFavorite.toggle();
+                    //   Get.snackbar('Error', 'Failed to update favorite');
+                    // }
+                  },
                 ),
-                onPressed: () async {
-                  isFavorite.toggle();
-                  try {
-                    if (isFavorite.value) {
-                      await favoriteController.addFavorite(product.id);
-                    } else {
-                      final favItem = favoriteController
-                          .getFavoriteItemByProductId(product.id);
-                      if (favItem != null) {
-                        await favoriteController.removeFavorite(favItem.favoriteId);
-                      }
-                    }
-                  } catch (e) {
-                    isFavorite.toggle();
-                    Get.snackbar('Error', 'Failed to update favorite');
-                  }
-                },
-              )),
+              ),
             ),
           ],
         ),
@@ -254,7 +284,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Card(
             elevation: 3,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -270,11 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.white,
                       ),
                       const SizedBox(height: 8),
-                      Container(
-                        width: 100,
-                        height: 14,
-                        color: Colors.white,
-                      ),
+                      Container(width: 100, height: 14, color: Colors.white),
                     ],
                   ),
                 ),
@@ -297,7 +324,9 @@ class _HomeScreenState extends State<HomeScreen> {
               style: const TextStyle(color: Colors.grey, fontSize: 16),
             ),
           ),
-        if (selectedAgeRange != null || selectedSize != null || selectedGender != null)
+        if (selectedAgeRange != null ||
+            selectedSize != null ||
+            selectedGender != null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
@@ -306,38 +335,39 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         Obx(() {
-          if (homeController.isLoading.value && homeController.productList.isEmpty) {
+          if (homeController.isLoading.value &&
+              homeController.productList.isEmpty) {
             return _buildShimmerGrid();
           }
           return products.isEmpty
               ? Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
-                const SizedBox(height: 10),
-                Text(
-                  searchController.searchQuery.isNotEmpty
-                      ? 'No products found for "${searchController.searchQuery.value}"'
-                      : 'No products match your filters',
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                  textAlign: TextAlign.center,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
+                    const SizedBox(height: 10),
+                    Text(
+                      searchController.searchQuery.isNotEmpty
+                          ? 'No products found for "${searchController.searchQuery.value}"'
+                          : 'No products match your filters',
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )
+              )
               : GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 15,
-              mainAxisSpacing: 15,
-            ),
-            itemCount: products.length,
-            itemBuilder: (_, index) => _buildProductCard(products[index]),
-          );
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.8,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 15,
+                ),
+                itemCount: products.length,
+                itemBuilder: (_, index) => _buildProductCard(products[index]),
+              );
         }),
       ],
     );
@@ -402,12 +432,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int labelToIndex(String label) {
     switch (label) {
-      case 'Home': return 0;
-      case 'Wishlist': return 1;
-      case 'Post': return 2;
-      case 'Chat': return 3;
-      case 'Profile': return 4;
-      default: return 0;
+      case 'Home':
+        return 0;
+      case 'Wishlist':
+        return 1;
+      case 'Post':
+        return 2;
+      case 'Chat':
+        return 3;
+      case 'Profile':
+        return 4;
+      default:
+        return 0;
     }
   }
 
@@ -435,17 +471,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       isLoadingUserName
                           ? SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: Lottie.asset(
-                          'assets/animations/loading.json',
-                          fit: BoxFit.contain,
-                        ),
-                      )
+                            height: 60,
+                            width: 60,
+                            child: Lottie.asset(
+                              'assets/animations/loading.json',
+                              fit: BoxFit.contain,
+                            ),
+                          )
                           : Text(
-                        'Hi, $userName',
-                        style: AppTextFont.bold(24, AppColors.onSecondary),
-                      ),
+                            'Hi, $userName',
+                            style: AppTextFont.bold(24, AppColors.onSecondary),
+                          ),
                       GestureDetector(
                         onTap: () => Get.to(() => const NotificationScreen()),
                         child: SvgPicture.asset(
@@ -488,8 +524,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           searchController.searchProducts(
                             value,
                             (selectedAgeRange != null ||
-                                selectedSize != null ||
-                                selectedGender != null)
+                                    selectedSize != null ||
+                                    selectedGender != null)
                                 ? filteredProducts
                                 : homeController.productList,
                           );
@@ -542,6 +578,7 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() => _currentIndex = index);
           switch (index) {
             case 1:
+              Get.find<FavoriteController>().fetchFavorites();
               Get.to(() => WishlistScreen());
               break;
             case 2:
@@ -568,3 +605,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

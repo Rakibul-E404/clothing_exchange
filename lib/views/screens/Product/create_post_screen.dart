@@ -281,10 +281,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () => Get.offAll(() => HomeScreen(), arguments: 0),
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(

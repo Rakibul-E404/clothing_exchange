@@ -54,9 +54,9 @@ class ChatListScreen extends StatelessWidget {
           final formattedTime = DateFormat.jm().format(createdAt);
 
           final String avatarUrl =
-          chatPartner['image'] != null && chatPartner['image'].isNotEmpty
-              ? '${AppUrl.imageBaseUrl}' + chatPartner['image']
-              : 'assets/default_avatar.png';
+              chatPartner['image'] != null && chatPartner['image'].isNotEmpty
+                  ? '${AppUrl.imageBaseUrl}' + chatPartner['image']
+                  : 'assets/default_avatar.png';
           debugPrint(avatarUrl.toString());
 
           return {
@@ -111,23 +111,30 @@ class ChatListScreen extends StatelessWidget {
 
   int labelToIndex(String label) {
     switch (label) {
-      case 'Home': return 0;
-      case 'Wishlist': return 1;
-      case 'Post': return 2;
-      case 'Chat': return 3;
-      case 'Profile': return 4;
-      default: return 0;
+      case 'Home':
+        return 0;
+      case 'Wishlist':
+        return 1;
+      case 'Post':
+        return 2;
+      case 'Chat':
+        return 3;
+      case 'Profile':
+        return 4;
+      default:
+        return 0;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final ChatController chatController = Get.put(ChatController());
+    final ChatController chatController = Get.find<ChatController>();
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Chats'),
+        automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchChatList(),
@@ -151,13 +158,13 @@ class ChatListScreen extends StatelessWidget {
 
               return ListTile(
                 leading:
-                chat['avatar'].toString().startsWith('assets/')
-                    ? CircleAvatar(
-                  backgroundImage: AssetImage(chat['avatar']),
-                )
-                    : CircleAvatar(
-                  backgroundImage: NetworkImage(chat['avatar']),
-                ),
+                    chat['avatar'].toString().startsWith('assets/')
+                        ? CircleAvatar(
+                          backgroundImage: AssetImage(chat['avatar']),
+                        )
+                        : CircleAvatar(
+                          backgroundImage: NetworkImage(chat['avatar']),
+                        ),
                 title: Text(chat['name']),
                 subtitle: Text(chat['message']),
                 trailing: Column(
@@ -218,7 +225,7 @@ class ChatListScreen extends StatelessWidget {
               Get.off(() => const CreatePostPage());
               break;
             case 3:
-            // Already on chat screen
+              // Already on chat screen
               break;
             case 4:
               Get.off(() => const ProfileScreen());

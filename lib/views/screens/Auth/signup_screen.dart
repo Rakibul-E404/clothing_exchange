@@ -259,7 +259,7 @@ debugPrint('1');
                   child: CustomElevatedButton(
                     text: 'Sign Up',
                     onPressed: () {
-                      // Call the registration function and navigate after validation
+
                       _register();
                     },
                     color: _isTermsAccepted

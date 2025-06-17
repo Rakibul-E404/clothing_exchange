@@ -11,6 +11,7 @@ class Product {
   final String color;
   final String status;
   final bool isDeleted;
+  final bool wishlistStatus;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int v;
@@ -33,6 +34,7 @@ class Product {
     required this.updatedAt,
     required this.v,
     required this.changedBy,
+    required this.wishlistStatus,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -52,6 +54,7 @@ class Product {
     updatedAt: DateTime.parse(json["updatedAt"] as String),
     v: json["__v"] as int,
     changedBy: json["changedBy"] ?? '',
+    wishlistStatus: json['wishlistStatus'] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
@@ -71,5 +74,6 @@ class Product {
     "updatedAt": updatedAt.toIso8601String(),
     "__v": v,
     "changedBy": changedBy,
+    "wishlistStatus": wishlistStatus,
   };
 }

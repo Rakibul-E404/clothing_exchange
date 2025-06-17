@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../images/assets_path.dart';
 import '../../../utils/Services/api_auth.dart';
 import '../../../utils/colors.dart';
@@ -94,7 +93,7 @@ class _SigninScreenState extends State<SigninScreen> {
         // Store credentials after successful login
         _storeCredentials(email, password);
 
-        Get.to(() => HomeScreen());
+        Get.offAll(() => HomeScreen());
       }
     } catch (e) {
       setState(() {

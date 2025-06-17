@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:clothing_exchange/controllers/home_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -36,6 +37,7 @@ class FavoriteController extends GetxController {
       final response = await http.get(Uri.parse(baseUrl), headers: headers);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        debugPrint(data.toString());
         final List attributes = data['data']['attributes'];
         favoriteItems.value =
             attributes.map((item) => FavoriteItem.fromJson(item)).toList();
@@ -48,7 +50,7 @@ class FavoriteController extends GetxController {
     isLoading.value = false;
   }
 
-  Future<bool> addFavorite(String productId) async {
+  addFavorite(String productId) async {
     isLoading.value = true;
     try {
       final headers = await _getHeaders();
@@ -60,7 +62,10 @@ class FavoriteController extends GetxController {
       debugPrint('$baseUrl/$productId');
       debugPrint('${response.body.toString()}');
       debugPrint('${response.statusCode.toString()}');
+
+      // removeFavorite(productId) ;
       if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.find<HomeController>().fetchProducts();
         await fetchFavorites();
         debugPrint('${favoriteItems.length}');
         isLoading.value = false;
@@ -89,6 +94,8 @@ class FavoriteController extends GetxController {
         Uri.parse('$baseUrl/$favoriteId'),
         headers: headers,
       );
+      debugPrint('====DELETE Product');
+      debugPrint(response.body.toString());
       if (response.statusCode == 200 || response.statusCode == 204) {
         favoriteItems.removeWhere((item) => item.favoriteId == favoriteId);
         isLoading.value = false;
@@ -117,3 +124,4 @@ class FavoriteController extends GetxController {
     }
   }
 }
+
