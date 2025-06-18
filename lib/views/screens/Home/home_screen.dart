@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProductCard(Product product) {
+  Widget _buildProductCard(Product product ,int index) {
     final RxBool isFavorite = favoriteController.isFavorite(product.id).obs;
     final fullImageUrl = '${AppUrl.imageBaseUrl}${product.image}';
 
@@ -218,47 +218,51 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
+            /// Button
             Positioned(
               top: 10,
               right: 10,
-              child: Obx(
-                () => IconButton(
-                  icon: Icon(
-                    // isFavorite.value ? Icons.favorite : Icons.favorite_border,
-                    product.wishlistStatus
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color:
-                        isFavorite.value
-                            ? Colors.red
-                            : AppColors.secondaryColor,
-                  ),
-                  onPressed: () async {
-                    // isFavorite.toggle();
-                    await favoriteController.addFavorite(product.id) ;
-                    // product.wishlistStatus
-                    //     ? await favoriteController.removeFavorite(product.id)
-                    //     : await favoriteController.addFavorite(product.id);
+              child: IconButton(
+                icon: Icon(
 
-                    // try {
-                    //   if (isFavorite.value) {
-                    //     await favoriteController.addFavorite(product.id);
-                    //   } else {
-                    //     final favItem = favoriteController
-                    //         .getFavoriteItemByProductId(product.id);
-                    //     if (favItem != null) {
-                    //       await favoriteController.removeFavorite(
-                    //         favItem.favoriteId,
-                    //       );
-                    //     }
-                    //   }
-                    // } catch (e) {
-                    //   isFavorite.toggle();
-                    //   Get.snackbar('Error', 'Failed to update favorite');
-                    // }
-                  },
+                  // isFavorite.value ? Icons.favorite : Icons.favorite_border,
+                  product.wishlistStatus
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color:
+                  product.wishlistStatus
+                          ? Colors.red
+                          : AppColors.secondaryColor,
                 ),
-              ),
+                onPressed: () async {
+                  homeController.addWishList(product.id, index);
+                  setState(() {
+
+                  });
+                  // isFavorite.toggle();
+                  // await favoriteController.addFavorite(product.id) ;
+                  // product.wishlistStatus
+                  //     ? await favoriteController.removeFavorite(product.id)
+                  //     : await favoriteController.addFavorite(product.id);
+
+                  // try {
+                  //   if (isFavorite.value) {
+                  //     await favoriteController.addFavorite(product.id);
+                  //   } else {
+                  //     final favItem = favoriteController
+                  //         .getFavoriteItemByProductId(product.id);
+                  //     if (favItem != null) {
+                  //       await favoriteController.removeFavorite(
+                  //         favItem.favoriteId,
+                  //       );
+                  //     }
+                  //   }
+                  // } catch (e) {
+                  //   isFavorite.toggle();
+                  //   Get.snackbar('Error', 'Failed to update favorite');
+                  // }
+                },
+              )
             ),
           ],
         ),
@@ -366,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisSpacing: 15,
                 ),
                 itemCount: products.length,
-                itemBuilder: (_, index) => _buildProductCard(products[index]),
+                itemBuilder: (_, index) => _buildProductCard(products[index],index),
               );
         }),
       ],
