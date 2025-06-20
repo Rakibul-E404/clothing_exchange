@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:clothing_exchange/Utils/app_url.dart';
+import 'package:clothing_exchange/models/conversation_model.dart';
 import 'package:clothing_exchange/utils/colors.dart';
 import 'package:clothing_exchange/views/screens/Chat/chat_list_screen.dart';
 import 'package:clothing_exchange/views/screens/Home/home_screen.dart';
@@ -16,11 +17,19 @@ import '../../../Utils/app_constants.dart';
 import '../../../Utils/helper_shared_pref.dart';
 import '../../../models/chat_model.dart';
 
-class InboxChatScreen extends StatelessWidget {
-  final String name;
+class InboxChatScreen extends StatefulWidget {
+  final ConversationModel conversationModel;
 
-  const InboxChatScreen({super.key, required this.name});
 
+  const InboxChatScreen({super.key, required this.conversationModel});
+
+  @override
+  State<InboxChatScreen> createState() => _InboxChatScreenState();
+}
+
+
+
+class _InboxChatScreenState extends State<InboxChatScreen> {
   void _showReportDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -99,6 +108,28 @@ class InboxChatScreen extends StatelessWidget {
     );
   }
 
+  var currentUserId='';
+  var reciveImage='';
+  var reciveName='';
+
+
+  curentID()async{
+    currentUserId=await SharedPrefHelper().getData(AppConstants.userId);
+     reciveImage = currentUserId ==widget.conversationModel.receiver!.id ? widget.conversationModel.sender!.image! : widget.conversationModel.receiver!.image!;
+     reciveName = currentUserId ==widget.conversationModel.receiver!.id ? widget.conversationModel.sender!.name! :widget.conversationModel.receiver!.name!;
+     setState(() {});
+  }
+
+
+
+  @override
+  void initState() {
+    curentID();
+
+    // TODO: implement initState
+
+  }
+
   @override
   Widget build(BuildContext context) {
     final ChatController chatController = Get.find<ChatController>();
@@ -128,7 +159,7 @@ class InboxChatScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    name,
+                    reciveName,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   Positioned(
@@ -151,7 +182,7 @@ class InboxChatScreen extends StatelessWidget {
               "Active now",
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.grey.shade600,
+                color: Colors.black,
                 height: 1.2,
               ),
             ),
@@ -182,8 +213,10 @@ class InboxChatScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Formal Suit Set",
+
+                    "${widget.conversationModel.product!.title}",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+
                   ),
                   SizedBox(height: 4),
                   Text(
@@ -352,6 +385,7 @@ class InboxChatScreen extends StatelessWidget {
                   }
                 },
               );
+
             }),
           ),
 

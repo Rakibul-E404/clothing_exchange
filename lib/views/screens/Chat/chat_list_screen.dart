@@ -31,8 +31,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   curentID()async{
     currentUserId=await SharedPrefHelper().getData(AppConstants.userId);
-
-
   }
 
 
@@ -146,6 +144,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   MessageController _chatCtrl=Get.put(MessageController());
 
 
+
   @override
   void initState() {
     curentID();
@@ -173,10 +172,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
            itemBuilder: (context, index) {
             final chat = _chatCtrl.convertionsMessageListModel[index];
 
-
             final reciveImage = currentUserId==chat.receiver!.id ? chat.sender!.image :chat.receiver!.image;
             final reciveName = currentUserId==chat.receiver!.id ? chat.sender!.name :chat.receiver!.name;
            return ListTile(
+
             leading: CircleAvatar(
               backgroundImage: NetworkImage("${AppUrl.imageBaseUrl}$reciveImage"),
             ),
@@ -185,7 +184,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           fontSize: 14,
                         ),
             ),
-            subtitle: Text('fak'),
+            subtitle: Text('${chat.lastMessage !=null ? chat.lastMessage!.text : ""}'),
 
             // trailing: Column(
             //   mainAxisAlignment: MainAxisAlignment.center,
@@ -217,6 +216,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
               //     builder: (_) => InboxChatScreen(name: chat['name']),
               //   ),
               // );
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => InboxChatScreen(conversationModel:chat,),
+                ),
+              );
             },
           );
         },
@@ -320,6 +326,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
               break;
           }
         },
+
+
         items: [
           _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
           _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
