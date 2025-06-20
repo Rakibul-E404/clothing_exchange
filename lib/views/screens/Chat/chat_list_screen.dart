@@ -8,18 +8,26 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../Utils/app_constants.dart';
 import '../../../Utils/app_url.dart';
 import '../../../Utils/helper_shared_pref.dart';
+import '../../../controllers/chat_controller.dart';
 import 'inbox_chat_screen.dart';
 import '../../../Utils/colors.dart';
 import '../Profile/profile_screen.dart';
 import '../Wishlist/wishlist_screen.dart';
 import '../Product/create_post_screen.dart';
 
-class ChatListScreen extends StatelessWidget {
+class ChatListScreen extends StatefulWidget {
   ChatListScreen({super.key});
 
-  final String apiUrl = '${AppUrl.baseUrl}/conversation/conversation_list';
-  int _currentIndex = 3; // Set to 3 for Chat
+  @override
+  State<ChatListScreen> createState() => _ChatListScreenState();
+}
 
+class _ChatListScreenState extends State<ChatListScreen> {
+  final String apiUrl = '${AppUrl.baseUrl}/conversation/conversation_list';
+  int _currentIndex = 3;
+
+
+ // Set to 3 for Chat
   Future<String?> _getToken() async {
     final token = await SharedPrefHelper().getData(AppConstants.token);
     return token as String?;
@@ -126,9 +134,20 @@ class ChatListScreen extends StatelessWidget {
     }
   }
 
+  MessageController _chatCtrl=Get.put(MessageController());
+
+  @override
+  void initState() {
+    _chatCtrl.conversationGet();
+
+    // TODO: implement initState
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    final ChatController chatController = Get.find<ChatController>();
+     final ChatController chatController = Get.find<ChatController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -136,6 +155,55 @@ class ChatListScreen extends StatelessWidget {
         title: const Text('Chats'),
         automaticallyImplyLeading: false,
       ),
+      // body:Obx(()=>_chatCtrl.conversationsLoading.value ?Center(child: CircularProgressIndicator()):
+      //    ListView.builder(
+      //      itemCount: _chatCtrl.convertionsMessageListModel.length,
+      //      itemBuilder: (context, index) {
+      //       final chat = _chatCtrl.convertionsMessageListModel[index];
+      //
+      //
+      //      return ListTile(
+      //       leading: CircleAvatar(
+      //         backgroundImage: NetworkImage(chat.receiver!.image!),
+      //       ),
+      //       title: Text(chat.receiver!.name!),
+      //       subtitle: Text('fak'),
+      //
+      //       // trailing: Column(
+      //       //   mainAxisAlignment: MainAxisAlignment.center,
+      //       //   children: [
+      //       //     Text(chat['time'], style: const TextStyle(fontSize: 12)),
+      //       //     if (chat['unread'] > 0)
+      //       //       CircleAvatar(
+      //       //         radius: 10,
+      //       //         backgroundColor: Colors.orange,
+      //       //         child: Text(
+      //       //           chat['unread'].toString(),
+      //       //           style: const TextStyle(
+      //       //             fontSize: 12,
+      //       //             color: Colors.white,
+      //       //           ),
+      //       //         ),
+      //       //       ),
+      //       //   ],
+      //       // ),
+      //       onTap: () {
+      //         // debugPrint(chat['conversationId']);
+      //         // chatController.fetchSingleMessage(
+      //         //   conversationId: chat['conversationId'],
+      //         // );
+      //         //
+      //         // Navigator.push(
+      //         //   context,
+      //         //   MaterialPageRoute(
+      //         //     builder: (_) => InboxChatScreen(name: chat['name']),
+      //         //   ),
+      //         // );
+      //       },
+      //     );
+      //   },
+      // ),),
+
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchChatList(),
         builder: (context, snapshot) {

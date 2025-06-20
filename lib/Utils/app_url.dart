@@ -11,6 +11,7 @@ class AppUrl {
   static String forgotPassword = '$baseUrl/auth/forgot-password';
   static String allProduct = '$baseUrl/products/all';
   static String wishlistEndPoint = '$baseUrl/favorite';
+  static String conversationEndPoint = '$baseUrl/conversation/conversation_list';
 
   static String getSingleConversation(String conversationId) {
     return '$baseUrl/conversation/get-messages?conversationId=$conversationId';
