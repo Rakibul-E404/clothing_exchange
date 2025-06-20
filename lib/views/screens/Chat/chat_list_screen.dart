@@ -27,6 +27,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
   int _currentIndex = 3;
 
 
+  var currentUserId='';
+
+  curentID()async{
+    currentUserId=await SharedPrefHelper().getData(AppConstants.userId);
+
+
+  }
+
+
  // Set to 3 for Chat
   Future<String?> _getToken() async {
     final token = await SharedPrefHelper().getData(AppConstants.token);
@@ -136,8 +145,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   MessageController _chatCtrl=Get.put(MessageController());
 
+
   @override
   void initState() {
+    curentID();
+
     _chatCtrl.conversationGet();
 
     // TODO: implement initState
@@ -147,7 +159,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
-     final ChatController chatController = Get.find<ChatController>();
+   //  final ChatController chatController = Get.find<ChatController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -155,122 +167,128 @@ class _ChatListScreenState extends State<ChatListScreen> {
         title: const Text('Chats'),
         automaticallyImplyLeading: false,
       ),
-      // body:Obx(()=>_chatCtrl.conversationsLoading.value ?Center(child: CircularProgressIndicator()):
-      //    ListView.builder(
-      //      itemCount: _chatCtrl.convertionsMessageListModel.length,
-      //      itemBuilder: (context, index) {
-      //       final chat = _chatCtrl.convertionsMessageListModel[index];
-      //
-      //
-      //      return ListTile(
-      //       leading: CircleAvatar(
-      //         backgroundImage: NetworkImage(chat.receiver!.image!),
-      //       ),
-      //       title: Text(chat.receiver!.name!),
-      //       subtitle: Text('fak'),
-      //
-      //       // trailing: Column(
-      //       //   mainAxisAlignment: MainAxisAlignment.center,
-      //       //   children: [
-      //       //     Text(chat['time'], style: const TextStyle(fontSize: 12)),
-      //       //     if (chat['unread'] > 0)
-      //       //       CircleAvatar(
-      //       //         radius: 10,
-      //       //         backgroundColor: Colors.orange,
-      //       //         child: Text(
-      //       //           chat['unread'].toString(),
-      //       //           style: const TextStyle(
-      //       //             fontSize: 12,
-      //       //             color: Colors.white,
-      //       //           ),
-      //       //         ),
-      //       //       ),
-      //       //   ],
-      //       // ),
-      //       onTap: () {
-      //         // debugPrint(chat['conversationId']);
-      //         // chatController.fetchSingleMessage(
-      //         //   conversationId: chat['conversationId'],
-      //         // );
-      //         //
-      //         // Navigator.push(
-      //         //   context,
-      //         //   MaterialPageRoute(
-      //         //     builder: (_) => InboxChatScreen(name: chat['name']),
-      //         //   ),
-      //         // );
-      //       },
-      //     );
-      //   },
-      // ),),
+      body:Obx(()=>_chatCtrl.conversationsLoading.value ?Center(child: CircularProgressIndicator()):
+         ListView.builder(
+           itemCount: _chatCtrl.convertionsMessageListModel.length,
+           itemBuilder: (context, index) {
+            final chat = _chatCtrl.convertionsMessageListModel[index];
 
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchChatList(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No chats found.'));
-          }
 
-          final chats = snapshot.data!;
-
-          return ListView.builder(
-            itemCount: chats.length,
-            itemBuilder: (context, index) {
-              final chat = chats[index];
-              debugPrint('details of chat list');
-              debugPrint(chat.toString());
-
-              return ListTile(
-                leading:
-                    chat['avatar'].toString().startsWith('assets/')
-                        ? CircleAvatar(
-                          backgroundImage: AssetImage(chat['avatar']),
-                        )
-                        : CircleAvatar(
-                          backgroundImage: NetworkImage(chat['avatar']),
+            final reciveImage = currentUserId==chat.receiver!.id ? chat.sender!.image :chat.receiver!.image;
+            final reciveName = currentUserId==chat.receiver!.id ? chat.sender!.name :chat.receiver!.name;
+           return ListTile(
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage("${AppUrl.imageBaseUrl}$reciveImage"),
+            ),
+            title: Text(reciveName!,
+                        style: const TextStyle(
+                          fontSize: 14,
                         ),
-                title: Text(chat['name']),
-                subtitle: Text(chat['message']),
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(chat['time'], style: const TextStyle(fontSize: 12)),
-                    if (chat['unread'] > 0)
-                      CircleAvatar(
-                        radius: 10,
-                        backgroundColor: Colors.orange,
-                        child: Text(
-                          chat['unread'].toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                onTap: () {
-                  debugPrint(chat['conversationId']);
-                  chatController.fetchSingleMessage(
-                    conversationId: chat['conversationId'],
-                  );
+            ),
+            subtitle: Text('fak'),
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => InboxChatScreen(name: chat['name']),
-                    ),
-                  );
-                },
-              );
+            // trailing: Column(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     Text(chat['time'], style: const TextStyle(fontSize: 12)),
+            //     if (chat['unread'] > 0)
+            //       CircleAvatar(
+            //         radius: 10,
+            //         backgroundColor: Colors.orange,
+            //         child: Text(
+            //           chat['unread'].toString(),
+            //           style: const TextStyle(
+            //             fontSize: 12,
+            //             color: Colors.white,
+            //           ),
+            //         ),
+            //       ),
+            //   ],
+            // ),
+            onTap: () {
+              // debugPrint(chat['conversationId']);
+              // chatController.fetchSingleMessage(
+              //   conversationId: chat['conversationId'],
+              // );
+              //
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (_) => InboxChatScreen(name: chat['name']),
+              //   ),
+              // );
             },
           );
         },
-      ),
+      ),),
+
+      // body: FutureBuilder<List<Map<String, dynamic>>>(
+      //   future: fetchChatList(),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return const Center(child: CircularProgressIndicator());
+      //     } else if (snapshot.hasError) {
+      //       return Center(child: Text('Error: ${snapshot.error}'));
+      //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+      //       return const Center(child: Text('No chats found.'));
+      //     }
+      //
+      //     final chats = snapshot.data!;
+      //
+      //     return ListView.builder(
+      //       itemCount: chats.length,
+      //       itemBuilder: (context, index) {
+      //         final chat = chats[index];
+      //         debugPrint('details of chat list');
+      //         debugPrint(chat.toString());
+      //
+      //         return ListTile(
+      //           leading:
+      //               chat['avatar'].toString().startsWith('assets/')
+      //                   ? CircleAvatar(
+      //                     backgroundImage: AssetImage(chat['avatar']),
+      //                   )
+      //                   : CircleAvatar(
+      //                     backgroundImage: NetworkImage(chat['avatar']),
+      //                   ),
+      //           title: Text(chat['name']),
+      //           subtitle: Text(chat['message']),
+      //           trailing: Column(
+      //             mainAxisAlignment: MainAxisAlignment.center,
+      //             children: [
+      //               Text(chat['time'], style: const TextStyle(fontSize: 12)),
+      //               if (chat['unread'] > 0)
+      //                 CircleAvatar(
+      //                   radius: 10,
+      //                   backgroundColor: Colors.orange,
+      //                   child: Text(
+      //                     chat['unread'].toString(),
+      //                     style: const TextStyle(
+      //                       fontSize: 12,
+      //                       color: Colors.white,
+      //                     ),
+      //                   ),
+      //                 ),
+      //             ],
+      //           ),
+      //           onTap: () {
+      //             debugPrint(chat['conversationId']);
+      //             chatController.fetchSingleMessage(
+      //               conversationId: chat['conversationId'],
+      //             );
+      //
+      //             Navigator.push(
+      //               context,
+      //               MaterialPageRoute(
+      //                 builder: (_) => InboxChatScreen(name: chat['name']),
+      //               ),
+      //             );
+      //           },
+      //         );
+      //       },
+      //     );
+      //   },
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppColors.bottom_navigation_bg_color,
         type: BottomNavigationBarType.fixed,

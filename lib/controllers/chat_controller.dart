@@ -38,15 +38,11 @@ class MessageController extends GetxController{
         print('Data ✅: $jsonMap');
 
         final attributes = jsonMap['data']?['attributes'];
+          convertionsMessageListModel.value = List<ConversationModel>.from(attributes.map((x) => ConversationModel.fromJson(x)));
+            conversationsLoading(false);
 
-        if (attributes != null && attributes is List) {
-          convertionsMessageListModel.value = List<ConversationModel>.from(attributes.map((x) => ConversationModel.fromJson(x)),
-          );
-          print("✅ List loaded: ${convertionsMessageListModel.length} items");
-          update();
-        } else {
-          print('⚠️ attributes is null or not a list');
-        }
+        update();
+
       } else {
         print('❌ Failed to load conversations (${response.statusCode})');
       }

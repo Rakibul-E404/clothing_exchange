@@ -62,10 +62,11 @@ class AuthService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseString = jsonDecode(response.body);
 
-        final accessToken =
-            responseString['data']['attributes']['tokens']['access']['token'];
+        final accessToken = responseString['data']['attributes']['tokens']['access']['token'];
+        //final accessToken = responseString['data']['attributes']['tokens']['access']['token'];
         // debugPrint('printing from controller === > ${accessToken}');
         SharedPrefHelper().saveData(AppConstants.token, accessToken);
+        SharedPrefHelper().saveData(AppConstants.userId, responseString['data']['attributes']['user']['id']);
         // debugPrint('checking the token  === > ${SharedPrefHelper().getData(AppConstants.token)}');
 
         return jsonDecode(response.body);
