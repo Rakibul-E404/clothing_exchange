@@ -34,7 +34,7 @@ class SocketApi {
 
   static IO.Socket socket = IO.io(
 
-    "https://ws.walkieapp.co.uk", //lOCAL
+    "https://d7002.sobhoy.com", //lOCAL
 
     //"https://ws.bidmedic.com",//LIVE
     IO.OptionBuilder().setTransports(['websocket'])

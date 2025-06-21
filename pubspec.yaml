@@ -50,6 +50,9 @@ dependencies:
   fluttertoast: ^8.2.12
   #Socket
   socket_io_client: ^3.1.1
+  # Message
+  grouped_list: ^5.1.2
+  flutter_chat_bubble: ^2.0.2
 
 dev_dependencies:
   flutter_test:

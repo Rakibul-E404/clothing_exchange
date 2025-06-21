@@ -134,6 +134,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../Utils/Services/chat_service.dart';
 import '../../../Utils/colors.dart';
+import '../../../controllers/chat_controller.dart';
 import '../../widget/customElevatedButton.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -159,7 +160,7 @@ class ProductDetailsScreen extends StatelessWidget {
     required this.productId,
   });
 
-  final ChatService chatService = ChatService(); // Initialize ChatService
+  final MessageController _chetCtrl = MessageController(); // Initialize ChatService
 
   @override
   Widget build(BuildContext context) {
@@ -231,38 +232,42 @@ class ProductDetailsScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomElevatedButton(
-                  textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold),
-                  borderRadius: 30,
-                  text: 'Exchange Product',
-                  onPressed: () async {
-                    try {
-                      String senderId =
-                          "yourSenderId"; // Replace with the actual sender ID
-                      String receiverId =
-                          "yourReceiverId"; // Replace with the actual receiver ID
-                      String message = "I am interested in this product.";
+            Obx(()=> _chetCtrl.conversationCreateLoading.value?CircularProgressIndicator(): CustomElevatedButton(
+                textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                borderRadius: 30,
+                text: 'Exchange Product',
+                onPressed: () async {
+                  print('ijfakjsdfa');
+                  _chetCtrl.conversationExchangeCreate(productId);
+                }
+              //   try {
+              //     String senderId =
+              //         "yourSenderId"; // Replace with the actual sender ID
+              //     String receiverId =
+              //         "yourReceiverId"; // Replace with the actual receiver ID
+              //     String message = "I am interested in this product.";
+              //
+              //     // Call the createConversation method
+              //     final response = await chatService.createConversation(
+              //       productId: productId,
+              //
+              //     );
+              //
+              //     // Fluttertoast.showToast(
+              //     //   msg: "Conversation created successfully",
+              //     //   toastLength: Toast.LENGTH_SHORT,
+              //     //   gravity: ToastGravity.BOTTOM,
+              //     // );
+              //   } catch (e) {
+              //     // Fluttertoast.showToast(
+              //     //   msg: "Failed to create conversation",
+              //     //   toastLength: Toast.LENGTH_SHORT,
+              //     //   gravity: ToastGravity.BOTTOM,
+              //     // );
+              //   }
+              // },
+            ),)
 
-                      // Call the createConversation method
-                      final response = await chatService.createConversation(
-                        productId: productId,
-
-                      );
-
-                      // Fluttertoast.showToast(
-                      //   msg: "Conversation created successfully",
-                      //   toastLength: Toast.LENGTH_SHORT,
-                      //   gravity: ToastGravity.BOTTOM,
-                      // );
-                    } catch (e) {
-                      // Fluttertoast.showToast(
-                      //   msg: "Failed to create conversation",
-                      //   toastLength: Toast.LENGTH_SHORT,
-                      //   gravity: ToastGravity.BOTTOM,
-                      // );
-                    }
-                  },
-                ),
               ],
             ),
           ],

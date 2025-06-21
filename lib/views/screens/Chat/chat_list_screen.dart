@@ -177,9 +177,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
            return ListTile(
 
             leading: CircleAvatar(
-              backgroundImage: NetworkImage("${AppUrl.imageBaseUrl}$reciveImage"),
+              backgroundImage: NetworkImage("${AppUrl.imageBaseUrl}${chat.product!.image}"),
             ),
-            title: Text(reciveName!,
+            title: Text('${chat.product!.title}',
                         style: const TextStyle(
                           fontSize: 14,
                         ),

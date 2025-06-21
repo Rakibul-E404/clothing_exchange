@@ -12,6 +12,10 @@ class AppUrl {
   static String allProduct = '$baseUrl/products/all';
   static String wishlistEndPoint = '$baseUrl/favorite';
   static String conversationEndPoint = '$baseUrl/conversation/conversation_list';
+  static String inboxEndPoint(conversationID) => '$baseUrl/conversation/get-messages?conversationId=$conversationID';
+
+  static String sentMessageEndPoint= "$baseUrl/conversation/send_message" ;
+  static String conversationCreateEndPoint= "$baseUrl/conversation/create" ;
 
   static String getSingleConversation(String conversationId) {
     return '$baseUrl/conversation/get-messages?conversationId=$conversationId';
