@@ -566,26 +566,26 @@ class _CreatePostPageState extends State<CreatePostPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Obx(
-            () => BottomNavigationBar(
-          backgroundColor: AppColors.bottom_navigation_bg_color,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: currentIndex.value,
-          selectedItemColor: AppColors.secondaryColor,
-          unselectedItemColor: AppColors.onSecondary,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          onTap: (index) => _onItemTapped(index),
-          items: [
-            _buildNavBarItem('assets/icons/home_icon.svg', 'Home', 0),
-            _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist', 1),
-            _buildNavBarItem('assets/icons/post_icon.svg', 'Post', 2),
-            _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat', 3),
-            _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile', 4),
-          ],
-        ),
-      ),
+      // bottomNavigationBar: Obx(
+      //       () => BottomNavigationBar(
+      //     backgroundColor: AppColors.bottom_navigation_bg_color,
+      //     type: BottomNavigationBarType.fixed,
+      //     currentIndex: currentIndex.value,
+      //     selectedItemColor: AppColors.secondaryColor,
+      //     unselectedItemColor: AppColors.onSecondary,
+      //     showSelectedLabels: true,
+      //     showUnselectedLabels: true,
+      //     selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+      //     onTap: (index) => _onItemTapped(index),
+      //     items: [
+      //       _buildNavBarItem('assets/icons/home_icon.svg', 'Home', 0),
+      //       _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist', 1),
+      //       _buildNavBarItem('assets/icons/post_icon.svg', 'Post', 2),
+      //       _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat', 3),
+      //       _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile', 4),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }

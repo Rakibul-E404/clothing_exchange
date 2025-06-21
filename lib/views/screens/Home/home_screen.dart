@@ -22,12 +22,8 @@ import 'package:clothing_exchange/utils/colors.dart';
 
 // Screens
 import 'package:clothing_exchange/views/screens/Product/product_details_screen.dart';
-import 'package:clothing_exchange/views/screens/Product/create_post_screen.dart';
-import 'package:clothing_exchange/views/screens/Chat/chat_list_screen.dart';
-import 'package:clothing_exchange/views/screens/Profile/profile_screen.dart';
 import 'package:clothing_exchange/views/screens/Notification/notification_screen.dart';
 import 'package:clothing_exchange/views/screens/Home/Filter/popup_filter.dart';
-import 'package:clothing_exchange/views/screens/Wishlist/wishlist_screen.dart';
 
 // Widgets
 import 'package:clothing_exchange/views/fonts_style/fonts_style.dart';
@@ -41,7 +37,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
   String? selectedAgeRange;
   String? selectedSize;
   String? selectedGender;
@@ -49,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoadingUserName = true;
   String? currentUserId;
 
-  final FavoriteController favoriteController = Get.put(FavoriteController());
+  final FavoriteController favoriteController = Get.find<FavoriteController>();
   final UserService userService = UserService();
   final TextEditingController _searchController = TextEditingController();
   final RxList<Product> filteredProducts = <Product>[].obs;
@@ -147,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildProductCard(Product product) {
     final RxBool isFavorite = favoriteController.isFavorite(product.id).obs;
+    // }
     final fullImageUrl = '${AppUrl.imageBaseUrl}${product.image}';
 
     return GestureDetector(
@@ -221,43 +217,28 @@ class _HomeScreenState extends State<HomeScreen> {
             Positioned(
               top: 10,
               right: 10,
-              child: Obx(
-                () => IconButton(
-                  icon: Icon(
-                    // isFavorite.value ? Icons.favorite : Icons.favorite_border,
-                    product.wishlistStatus
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color:
-                        isFavorite.value
-                            ? Colors.red
-                            : AppColors.secondaryColor,
-                  ),
-                  onPressed: () async {
-                    // isFavorite.toggle();
-                    await favoriteController.addFavorite(product.id) ;
-                    // product.wishlistStatus
-                    //     ? await favoriteController.removeFavorite(product.id)
-                    //     : await favoriteController.addFavorite(product.id);
-
-                    // try {
-                    //   if (isFavorite.value) {
-                    //     await favoriteController.addFavorite(product.id);
-                    //   } else {
-                    //     final favItem = favoriteController
-                    //         .getFavoriteItemByProductId(product.id);
-                    //     if (favItem != null) {
-                    //       await favoriteController.removeFavorite(
-                    //         favItem.favoriteId,
-                    //       );
-                    //     }
-                    //   }
-                    // } catch (e) {
-                    //   isFavorite.toggle();
-                    //   Get.snackbar('Error', 'Failed to update favorite');
-                    // }
-                  },
+              child: IconButton(
+                icon: Icon(
+                  // isFavorite.value ? Icons.favorite : Icons.favorite_border,
+                  product.wishlistStatus
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color:
+                      product.wishlistStatus
+                          ? Colors.red
+                          : AppColors.secondaryColor,
                 ),
+                onPressed: () async {
+                  // isFavorite.toggle();
+                  if (Get.find<FavoriteController>().isLoading.value == true) {
+                    return;
+                  }
+                  debugPrint(product.id.toString());
+                  product.wishlistStatus
+                      ? await favoriteController.removeFavorite(product.id)
+                      : await favoriteController.addFavorite(product.id);
+                  setState(() {});
+                },
               ),
             ),
           ],
@@ -401,34 +382,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  BottomNavigationBarItem _buildNavBarItem(String iconPath, String label) {
-    return BottomNavigationBarItem(
-      icon: SvgPicture.asset(
-        iconPath,
-        colorFilter: ColorFilter.mode(
-          _currentIndex == labelToIndex(label)
-              ? AppColors.secondaryColor
-              : AppColors.onSecondary,
-          BlendMode.srcIn,
-        ),
-        width: 35,
-        height: 35,
-      ),
-      activeIcon: CircleAvatar(
-        backgroundColor: AppColors.icon_bg_circleAvater_color,
-        child: SvgPicture.asset(
-          iconPath,
-          colorFilter: const ColorFilter.mode(
-            AppColors.secondaryColor,
-            BlendMode.srcIn,
-          ),
-          width: 35,
-          height: 35,
-        ),
-      ),
-      label: label,
-    );
-  }
 
   int labelToIndex(String label) {
     switch (label) {
@@ -564,45 +517,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppColors.bottom_navigation_bg_color,
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        selectedItemColor: AppColors.secondaryColor,
-        unselectedItemColor: AppColors.onSecondary,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        onTap: (index) {
-          if (_currentIndex == index) return;
-          setState(() => _currentIndex = index);
-          switch (index) {
-            case 1:
-              Get.find<FavoriteController>().fetchFavorites();
-              Get.to(() => WishlistScreen());
-              break;
-            case 2:
-              Get.to(() => const CreatePostPage());
-              break;
-            case 3:
-              Get.to(() => ChatListScreen());
-              break;
-            case 4:
-              Get.to(() => const ProfileScreen());
-              break;
-            default:
-              break;
-          }
-        },
-        items: [
-          _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
-          _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
-          _buildNavBarItem('assets/icons/post_icon.svg', 'Post'),
-          _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat'),
-          _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile'),
-        ],
-      ),
     );
   }
 }
-

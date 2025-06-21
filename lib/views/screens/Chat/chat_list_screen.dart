@@ -203,45 +203,45 @@ class ChatListScreen extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppColors.bottom_navigation_bg_color,
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        selectedItemColor: AppColors.secondaryColor,
-        unselectedItemColor: AppColors.onSecondary,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        onTap: (index) {
-          if (_currentIndex == index) return;
-          switch (index) {
-            case 0:
-              Get.off(() => HomeScreen());
-              break;
-            case 1:
-              Get.off(() => WishlistScreen());
-              break;
-            case 2:
-              Get.off(() => const CreatePostPage());
-              break;
-            case 3:
-              // Already on chat screen
-              break;
-            case 4:
-              Get.off(() => const ProfileScreen());
-              break;
-            default:
-              break;
-          }
-        },
-        items: [
-          _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
-          _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
-          _buildNavBarItem('assets/icons/post_icon.svg', 'Post'),
-          _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat'),
-          _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile'),
-        ],
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   backgroundColor: AppColors.bottom_navigation_bg_color,
+      //   type: BottomNavigationBarType.fixed,
+      //   currentIndex: _currentIndex,
+      //   selectedItemColor: AppColors.secondaryColor,
+      //   unselectedItemColor: AppColors.onSecondary,
+      //   showSelectedLabels: true,
+      //   showUnselectedLabels: true,
+      //   selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+      //   onTap: (index) {
+      //     if (_currentIndex == index) return;
+      //     switch (index) {
+      //       case 0:
+      //         Get.off(() => HomeScreen());
+      //         break;
+      //       case 1:
+      //         Get.off(() => WishlistScreen());
+      //         break;
+      //       case 2:
+      //         Get.off(() => const CreatePostPage());
+      //         break;
+      //       case 3:
+      //         // Already on chat screen
+      //         break;
+      //       case 4:
+      //         Get.off(() => const ProfileScreen());
+      //         break;
+      //       default:
+      //         break;
+      //     }
+      //   },
+      //   items: [
+      //     _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
+      //     _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
+      //     _buildNavBarItem('assets/icons/post_icon.svg', 'Post'),
+      //     _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat'),
+      //     _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile'),
+      //   ],
+      // ),
     );
   }
 }
