@@ -8,18 +8,33 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../Utils/app_constants.dart';
 import '../../../Utils/app_url.dart';
 import '../../../Utils/helper_shared_pref.dart';
+import '../../../controllers/chat_controller.dart';
 import 'inbox_chat_screen.dart';
 import '../../../Utils/colors.dart';
 import '../Profile/profile_screen.dart';
 import '../Wishlist/wishlist_screen.dart';
 import '../Product/create_post_screen.dart';
 
-class ChatListScreen extends StatelessWidget {
+class ChatListScreen extends StatefulWidget {
   ChatListScreen({super.key});
 
-  final String apiUrl = '${AppUrl.baseUrl}/conversation/conversation_list';
-  int _currentIndex = 3; // Set to 3 for Chat
+  @override
+  State<ChatListScreen> createState() => _ChatListScreenState();
+}
 
+class _ChatListScreenState extends State<ChatListScreen> {
+  final String apiUrl = '${AppUrl.baseUrl}/conversation/conversation_list';
+  int _currentIndex = 3;
+
+
+  var currentUserId='';
+
+  curentID()async{
+    currentUserId=await SharedPrefHelper().getData(AppConstants.userId);
+  }
+
+
+ // Set to 3 for Chat
   Future<String?> _getToken() async {
     final token = await SharedPrefHelper().getData(AppConstants.token);
     return token as String?;
@@ -126,9 +141,24 @@ class ChatListScreen extends StatelessWidget {
     }
   }
 
+  MessageController _chatCtrl=Get.put(MessageController());
+
+
+
+  @override
+  void initState() {
+    curentID();
+
+    _chatCtrl.conversationGet();
+
+    // TODO: implement initState
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    final ChatController chatController = Get.find<ChatController>();
+   //  final ChatController chatController = Get.find<ChatController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -136,73 +166,135 @@ class ChatListScreen extends StatelessWidget {
         title: const Text('Chats'),
         automaticallyImplyLeading: false,
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchChatList(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No chats found.'));
-          }
+      body:Obx(()=>_chatCtrl.conversationsLoading.value ?Center(child: CircularProgressIndicator()):
+         ListView.builder(
+           itemCount: _chatCtrl.convertionsMessageListModel.length,
+           itemBuilder: (context, index) {
+            final chat = _chatCtrl.convertionsMessageListModel[index];
 
-          final chats = snapshot.data!;
+            final reciveImage = currentUserId==chat.receiver!.id ? chat.sender!.image :chat.receiver!.image;
+            final reciveName = currentUserId==chat.receiver!.id ? chat.sender!.name :chat.receiver!.name;
+           return ListTile(
 
-          return ListView.builder(
-            itemCount: chats.length,
-            itemBuilder: (context, index) {
-              final chat = chats[index];
-              debugPrint('details of chat list');
-              debugPrint(chat.toString());
-
-              return ListTile(
-                leading:
-                    chat['avatar'].toString().startsWith('assets/')
-                        ? CircleAvatar(
-                          backgroundImage: AssetImage(chat['avatar']),
-                        )
-                        : CircleAvatar(
-                          backgroundImage: NetworkImage(chat['avatar']),
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage("${AppUrl.imageBaseUrl}${chat.product!.image}"),
+            ),
+            title: Text('${chat.product!.title}',
+                        style: const TextStyle(
+                          fontSize: 14,
                         ),
-                title: Text(chat['name']),
-                subtitle: Text(chat['message']),
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(chat['time'], style: const TextStyle(fontSize: 12)),
-                    if (chat['unread'] > 0)
-                      CircleAvatar(
-                        radius: 10,
-                        backgroundColor: Colors.orange,
-                        child: Text(
-                          chat['unread'].toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                  ],
+            ),
+            subtitle: Text('${chat.lastMessage !=null ? chat.lastMessage!.text : ""}'),
+
+            // trailing: Column(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     Text(chat['time'], style: const TextStyle(fontSize: 12)),
+            //     if (chat['unread'] > 0)
+            //       CircleAvatar(
+            //         radius: 10,
+            //         backgroundColor: Colors.orange,
+            //         child: Text(
+            //           chat['unread'].toString(),
+            //           style: const TextStyle(
+            //             fontSize: 12,
+            //             color: Colors.white,
+            //           ),
+            //         ),
+            //       ),
+            //   ],
+            // ),
+            onTap: () {
+              // debugPrint(chat['conversationId']);
+              // chatController.fetchSingleMessage(
+              //   conversationId: chat['conversationId'],
+              // );
+              //
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (_) => InboxChatScreen(name: chat['name']),
+              //   ),
+              // );
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => InboxChatScreen(conversationModel:chat,),
                 ),
-                onTap: () {
-                  debugPrint(chat['conversationId']);
-                  chatController.fetchSingleMessage(
-                    conversationId: chat['conversationId'],
-                  );
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => InboxChatScreen(name: chat['name']),
-                    ),
-                  );
-                },
               );
             },
           );
         },
-      ),
+      ),),
+
+      // body: FutureBuilder<List<Map<String, dynamic>>>(
+      //   future: fetchChatList(),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return const Center(child: CircularProgressIndicator());
+      //     } else if (snapshot.hasError) {
+      //       return Center(child: Text('Error: ${snapshot.error}'));
+      //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+      //       return const Center(child: Text('No chats found.'));
+      //     }
+      //
+      //     final chats = snapshot.data!;
+      //
+      //     return ListView.builder(
+      //       itemCount: chats.length,
+      //       itemBuilder: (context, index) {
+      //         final chat = chats[index];
+      //         debugPrint('details of chat list');
+      //         debugPrint(chat.toString());
+      //
+      //         return ListTile(
+      //           leading:
+      //               chat['avatar'].toString().startsWith('assets/')
+      //                   ? CircleAvatar(
+      //                     backgroundImage: AssetImage(chat['avatar']),
+      //                   )
+      //                   : CircleAvatar(
+      //                     backgroundImage: NetworkImage(chat['avatar']),
+      //                   ),
+      //           title: Text(chat['name']),
+      //           subtitle: Text(chat['message']),
+      //           trailing: Column(
+      //             mainAxisAlignment: MainAxisAlignment.center,
+      //             children: [
+      //               Text(chat['time'], style: const TextStyle(fontSize: 12)),
+      //               if (chat['unread'] > 0)
+      //                 CircleAvatar(
+      //                   radius: 10,
+      //                   backgroundColor: Colors.orange,
+      //                   child: Text(
+      //                     chat['unread'].toString(),
+      //                     style: const TextStyle(
+      //                       fontSize: 12,
+      //                       color: Colors.white,
+      //                     ),
+      //                   ),
+      //                 ),
+      //             ],
+      //           ),
+      //           onTap: () {
+      //             debugPrint(chat['conversationId']);
+      //             chatController.fetchSingleMessage(
+      //               conversationId: chat['conversationId'],
+      //             );
+      //
+      //             Navigator.push(
+      //               context,
+      //               MaterialPageRoute(
+      //                 builder: (_) => InboxChatScreen(name: chat['name']),
+      //               ),
+      //             );
+      //           },
+      //         );
+      //       },
+      //     );
+      //   },
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppColors.bottom_navigation_bg_color,
         type: BottomNavigationBarType.fixed,
@@ -234,6 +326,8 @@ class ChatListScreen extends StatelessWidget {
               break;
           }
         },
+
+
         items: [
           _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
           _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
