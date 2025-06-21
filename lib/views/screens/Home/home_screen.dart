@@ -55,8 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadUserName();
-    // homeController.fetchProducts();
     ever(homeController.productList, (_) => applyFilters());
+    ever(searchController.searchQuery, (_) => applyFilters()); // Watch search query changes
   }
 
   Future<void> _loadUserName() async {
@@ -76,90 +76,80 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void applyFilters() {
     final List<Product> allProducts = homeController.productList;
-    final List<Product> filtered =
-        allProducts.where((product) {
-          final bool matchesAge =
-              selectedAgeRange == null ||
+
+    // First, filter products based on the search query
+    final List<Product> searchFilteredProducts = allProducts.where((product) {
+      return product.title.toLowerCase().contains(searchController.searchQuery.value.toLowerCase());
+    }).toList();
+
+    // Then, apply age, size, and gender filters to the already filtered products
+    final List<Product> filtered = searchFilteredProducts.where((product) {
+      final bool matchesAge =
+          selectedAgeRange == null ||
               product.age
                   .replaceAll(RegExp(r'[^0-9-]'), '')
-                  .contains(
-                    selectedAgeRange!.replaceAll(RegExp(r'[^0-9-]'), ''),
-                  );
+                  .contains(selectedAgeRange!.replaceAll(RegExp(r'[^0-9-]'), ''));
 
-          final bool matchesSize =
-              selectedSize == null ||
-              product.size.toLowerCase().startsWith(
-                selectedSize!.toLowerCase()[0],
-              );
+      final bool matchesSize =
+          selectedSize == null ||
+              product.size.toLowerCase().startsWith(selectedSize!.toLowerCase()[0]);
 
-          final bool matchesGender =
-              selectedGender == null ||
+      final bool matchesGender =
+          selectedGender == null ||
               product.gender.toLowerCase() == selectedGender!.toLowerCase() ||
               product.gender.toLowerCase() ==
                   '${selectedGender!.toLowerCase()}s' ||
-              (selectedGender == 'boys' &&
-                  product.gender.toLowerCase() == 'boy') ||
-              (selectedGender == 'girls' &&
-                  product.gender.toLowerCase() == 'girl');
+              (selectedGender == 'boys' && product.gender.toLowerCase() == 'boy') ||
+              (selectedGender == 'girls' && product.gender.toLowerCase() == 'girl');
 
-          return matchesAge && matchesSize && matchesGender;
-        }).toList();
+      return matchesAge && matchesSize && matchesGender;
+    }).toList();
 
+    // Update the filtered products list
     filteredProducts.value = filtered;
   }
 
   List<Product> getDisplayProducts() {
-    if (searchController.searchQuery.isNotEmpty) {
-      return searchController.searchResults;
-    }
-    return (selectedAgeRange != null ||
-            selectedSize != null ||
-            selectedGender != null)
-        ? filteredProducts
-        : homeController.productList;
+    return filteredProducts.isEmpty && searchController.searchQuery.isNotEmpty
+        ? [] // If there are no filtered products and the search query is active, return an empty list
+        : filteredProducts;
   }
 
   void _showFilterBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder:
-          (_) => FilterBottomSheet(
-            selectedAgeRange: selectedAgeRange,
-            selectedSize: selectedSize,
-            selectedGender: selectedGender,
-            onApply: (age, size, gender) {
-              setState(() {
-                selectedAgeRange = age;
-                selectedSize = size;
-                selectedGender = gender;
-                applyFilters();
-              });
-            },
-          ),
+      builder: (_) => FilterBottomSheet(
+        selectedAgeRange: selectedAgeRange,
+        selectedSize: selectedSize,
+        selectedGender: selectedGender,
+        onApply: (age, size, gender) {
+          setState(() {
+            selectedAgeRange = age;
+            selectedSize = size;
+            selectedGender = gender;
+            applyFilters();
+          });
+        },
+      ),
     );
   }
 
   Widget _buildProductCard(Product product) {
     final RxBool isFavorite = favoriteController.isFavorite(product.id).obs;
-    // }
     final fullImageUrl = '${AppUrl.imageBaseUrl}${product.image}';
 
     return GestureDetector(
-      onTap:
-          () => Get.to(
-            () => ProductDetailsScreen(
-              title: product.title,
-              age: product.age,
-              size: product.size,
-              gender: product.gender,
-              location: product.location,
-              imageUrl: fullImageUrl,
-              description: product.description,
-              productId: product.id,
-              // price: '',
-            ),
-          ),
+      onTap: () => Get.to(() => ProductDetailsScreen(
+        title: product.title,
+        age: product.age,
+        size: product.size,
+        gender: product.gender,
+        location: product.location,
+        imageUrl: fullImageUrl,
+        description: product.description,
+        productId: product.id,
+      )),
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -174,17 +164,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: CachedNetworkImage(
                       imageUrl: fullImageUrl,
                       fit: BoxFit.cover,
-                      placeholder:
-                          (context, url) => Shimmer.fromColors(
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
-                            child: Container(color: Colors.white),
-                          ),
-                      errorWidget:
-                          (context, url, error) => Container(
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.error, color: Colors.grey),
-                          ),
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(color: Colors.white),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.error, color: Colors.grey),
+                      ),
                     ),
                   ),
                 ),
@@ -219,21 +207,13 @@ class _HomeScreenState extends State<HomeScreen> {
               right: 10,
               child: IconButton(
                 icon: Icon(
-                  // isFavorite.value ? Icons.favorite : Icons.favorite_border,
-                  product.wishlistStatus
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color:
-                      product.wishlistStatus
-                          ? Colors.red
-                          : AppColors.secondaryColor,
+                  product.wishlistStatus ? Icons.favorite : Icons.favorite_border,
+                  color: product.wishlistStatus ? Colors.red : AppColors.secondaryColor,
                 ),
                 onPressed: () async {
-                  // isFavorite.toggle();
-                  if (Get.find<FavoriteController>().isLoading.value == true) {
+                  if (favoriteController.isLoading.value == true) {
                     return;
                   }
-                  debugPrint(product.id.toString());
                   product.wishlistStatus
                       ? await favoriteController.removeFavorite(product.id)
                       : await favoriteController.addFavorite(product.id);
@@ -322,33 +302,33 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           return products.isEmpty
               ? Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
-                    const SizedBox(height: 10),
-                    Text(
-                      searchController.searchQuery.isNotEmpty
-                          ? 'No products found for "${searchController.searchQuery.value}"'
-                          : 'No products match your filters',
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
+                const SizedBox(height: 10),
+                Text(
+                  searchController.searchQuery.isNotEmpty
+                      ? 'No products found for "${searchController.searchQuery.value}"'
+                      : 'No products match your filters',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  textAlign: TextAlign.center,
                 ),
-              )
+              ],
+            ),
+          )
               : GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 15,
-                ),
-                itemCount: products.length,
-                itemBuilder: (_, index) => _buildProductCard(products[index]),
-              );
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.8,
+              crossAxisSpacing: 15,
+              mainAxisSpacing: 15,
+            ),
+            itemCount: products.length,
+            itemBuilder: (_, index) => _buildProductCard(products[index]),
+          );
         }),
       ],
     );
@@ -382,24 +362,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-  int labelToIndex(String label) {
-    switch (label) {
-      case 'Home':
-        return 0;
-      case 'Wishlist':
-        return 1;
-      case 'Post':
-        return 2;
-      case 'Chat':
-        return 3;
-      case 'Profile':
-        return 4;
-      default:
-        return 0;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -424,17 +386,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       isLoadingUserName
                           ? SizedBox(
-                            height: 60,
-                            width: 60,
-                            child: Lottie.asset(
-                              'assets/animations/loading.json',
-                              fit: BoxFit.contain,
-                            ),
-                          )
+                        height: 60,
+                        width: 60,
+                        child: Lottie.asset(
+                          'assets/animations/loading.json',
+                          fit: BoxFit.contain,
+                        ),
+                      )
                           : Text(
-                            'Hi, $userName',
-                            style: AppTextFont.bold(24, AppColors.onSecondary),
-                          ),
+                        'Hi, $userName',
+                        style: AppTextFont.bold(24, AppColors.onSecondary),
+                      ),
                       GestureDetector(
                         onTap: () => Get.to(() => const NotificationScreen()),
                         child: SvgPicture.asset(
@@ -474,14 +436,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         hoverColor: AppColors.primaryColor,
                         keyboardType: TextInputType.text,
                         onChanged: (value) {
-                          searchController.searchProducts(
-                            value,
-                            (selectedAgeRange != null ||
-                                    selectedSize != null ||
-                                    selectedGender != null)
-                                ? filteredProducts
-                                : homeController.productList,
-                          );
+                          searchController.searchQuery.value = value;
+                          applyFilters();
                         },
                       ),
                     ),
@@ -491,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           _searchController.clear();
                           searchController.searchQuery.value = '';
-                          searchController.searchResults.clear();
+                          applyFilters();
                         },
                       ),
                   ],
@@ -520,3 +476,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
