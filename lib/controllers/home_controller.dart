@@ -57,4 +57,34 @@ class HomeController extends GetxController {
   Future<void> refreshProducts() async {
     await fetchProducts();
   }
+
+
+  addWishList (String productId,int index)async{
+
+    var token= await SharedPrefHelper().getData(AppConstants.token);
+
+    try {
+      final response = await http.post(
+        Uri.parse('${AppUrl.wishlistEndPoint}/$productId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // removeFavorite(productId) ;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+
+        productList[index].wishlistStatus = !productList[index].wishlistStatus;
+        productList.refresh();
+      }
+    } catch (e) {
+      print('Error>>>>>>>>>>>>.$e');
+      Get.snackbar('Error', e.toString());
+      isLoading.value = false;
+      return false;
+    }
+
+  }
 }
+

@@ -11,7 +11,7 @@ class Product {
   final String color;
   final String status;
   final bool isDeleted;
-  final bool wishlistStatus;
+   bool wishlistStatus =false;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int v;
