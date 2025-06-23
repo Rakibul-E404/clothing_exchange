@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'Utils/helper_shared_pref.dart' show SharedPrefHelper;
+import 'controllers/favoriteController.dart';
+import 'controllers/wishlist_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,5 +57,7 @@ class ControllerBinder extends Bindings {
   @override
   void dependencies() {
     Get.put(ChatController());
+    Get.put(FavoriteController());
+    Get.put(WishlistController());
   }
 }

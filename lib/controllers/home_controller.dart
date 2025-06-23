@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class HomeController extends GetxController {
   final RxList<Product> productList = <Product>[].obs;
-  final RxBool isLoading = true.obs;
+  final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
   @override
@@ -58,6 +58,7 @@ class HomeController extends GetxController {
     await fetchProducts();
   }
 
+
   addWishList (String productId,int index)async{
 
     var token= await SharedPrefHelper().getData(AppConstants.token);
@@ -86,3 +87,4 @@ class HomeController extends GetxController {
 
   }
 }
+

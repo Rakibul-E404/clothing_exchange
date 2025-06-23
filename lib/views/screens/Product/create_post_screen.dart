@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:clothing_exchange/views/main_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -67,7 +68,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
     }
   }
 
-  BottomNavigationBarItem _buildNavBarItem(String iconPath, String label, int index) {
+  BottomNavigationBarItem _buildNavBarItem(
+    String iconPath,
+    String label,
+    int index,
+  ) {
     return BottomNavigationBarItem(
       icon: SvgPicture.asset(
         iconPath,
@@ -133,6 +138,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   Future<void> _submitPost() async {
+    debugPrint(_ageRange);
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedImage == null) {
@@ -199,7 +205,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       request.fields['age'] = _ageRange ?? '';
       request.fields['size'] = _size ?? '';
       request.fields['color'] =
-      '#${_selectedColor.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+          '#${_selectedColor.value.toRadixString(16).padLeft(8, '0').substring(2)}';
 
       // Add image file
       final mimeType =
@@ -217,13 +223,15 @@ class _CreatePostPageState extends State<CreatePostPage> {
       final response = await request.send();
       final respStr = await response.stream.bytesToString();
       final respJson = jsonDecode(respStr);
+      debugPrint('sakib ====> ${request.fields['age']}');
+      debugPrint('sakib ====> ${respJson.toString()}');
 
       if (response.statusCode == 201) {
         _showSuccess(
           'Success',
           respJson['message'] ?? 'Post created successfully',
         );
-        Get.offAll(() => HomeScreen(), arguments: 0);
+        Get.offAll(() => MainBottomNavScreen(), arguments: 0);
       } else {
         _showError('Error', respJson['message'] ?? 'Failed to create post');
       }
@@ -293,299 +301,283 @@ class _CreatePostPageState extends State<CreatePostPage> {
         elevation: 0,
         toolbarHeight: 100,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: CustomElevatedButton(
-                  elevation: 0,
-                  text: _selectedImage == null
-                      ? 'Upload An Image'
-                      : 'Change Image',
-                  textStyle: AppTextFont.regular(
-                    15,
-                    AppColors.secondary_text_color,
-                  ),
-                  onPressed: _pickImage,
-                  borderRadius: 30,
-                ),
-              ),
-              const SizedBox(height: 10),
-              if (_selectedImage != null)
-                Container(
-                  height: 150,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Image.file(_selectedImage!, fit: BoxFit.cover),
-                ),
-              const SizedBox(height: 20),
-              const Text(
-                'Title',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter title',
-                ),
-                validator: (value) =>
-                (value == null || value.isEmpty)
-                    ? 'Please enter a title'
-                    : null,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Age Range',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                value: _ageRange,
-                items: const [
-                  DropdownMenuItem(
-                    value: '0-6',
-                    child: Text('0-6 months'),
-                  ),
-                  DropdownMenuItem(
-                    value: '6-12',
-                    child: Text('6-12 months'),
-                  ),
-                  DropdownMenuItem(
-                    value: '1-2',
-                    child: Text('1-2 years'),
-                  ),
-                  DropdownMenuItem(
-                    value: '2-3',
-                    child: Text('2-3 years'),
-                  ),
-                  DropdownMenuItem(
-                    value: '3-4',
-                    child: Text('3-4 years'),
-                  ),
-                  DropdownMenuItem(
-                    value: '4-5',
-                    child: Text('4-5 years'),
-                  ),
-                  DropdownMenuItem(
-                    value: '5-6',
-                    child: Text('5-6 years'),
-                  ),
-                  DropdownMenuItem(
-                    value: '6-7',
-                    child: Text('6-7 years'),
-                  ),
-                  DropdownMenuItem(
-                    value: '7-8',
-                    child: Text('7-8 years'),
-                  ),
-                  DropdownMenuItem(
-                    value: '8+',
-                    child: Text('8+ years'),
-                  ),
-                ],
-                onChanged: (value) => setState(() => _ageRange = value),
-                validator: (value) =>
-                value == null ? 'Please select age range' : null,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Gender',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                value: _gender,
-                items: const [
-                  DropdownMenuItem(value: 'male', child: Text('Male')),
-                  DropdownMenuItem(
-                    value: 'female',
-                    child: Text('Female'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'unisex',
-                    child: Text('Unisex'),
-                  ),
-                ],
-                onChanged: (value) => setState(() => _gender = value),
-                validator: (value) =>
-                value == null ? 'Please select gender' : null,
-                hint: const Text('Select gender'),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Size',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: AppColors.secondaryColor,
-                    ),
-                  ),
-                  hintText: 'Select size',
-                ),
-                value: _size,
-                items: const [
-                  DropdownMenuItem(value: 'sm', child: Text('S')),
-                  DropdownMenuItem(value: 'md', child: Text('M')),
-                  DropdownMenuItem(value: 'lg', child: Text('L')),
-                  DropdownMenuItem(value: 'xxl', child: Text('XL')),
-                ],
-                onChanged: (value) => setState(() => _size = value),
-                validator: (value) =>
-                value == null ? 'Please select size' : null,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Location',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter location',
-                ),
-                validator: (value) =>
-                (value == null || value.isEmpty)
-                    ? 'Please enter location'
-                    : null,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Color',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      title: const Text('Pick a Color'),
-                      content: SingleChildScrollView(
-                        child: ColorPicker(
-                          pickerColor: _selectedColor,
-                          onColorChanged: (color) {
-                            setState(() => _selectedColor = color);
-                          },
-                          showLabel: true,
-                          pickerAreaHeightPercent: 0.8,
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomElevatedButton(
+                          elevation: 0,
+                          text:
+                              _selectedImage == null
+                                  ? 'Upload An Image'
+                                  : 'Change Image',
+                          textStyle: AppTextFont.regular(
+                            15,
+                            AppColors.secondary_text_color,
+                          ),
+                          onPressed: _pickImage,
+                          borderRadius: 30,
                         ),
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('OK',style: TextStyle(color: Colors.black),),
+                      const SizedBox(height: 10),
+                      if (_selectedImage != null)
+                        Container(
+                          height: 150,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Image.file(_selectedImage!, fit: BoxFit.cover),
                         ),
-                      ],
-                    ),
-                  );
-                },
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    color: _selectedColor,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black26),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Title',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _titleController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter title',
+                        ),
+                        validator:
+                            (value) =>
+                                (value == null || value.isEmpty)
+                                    ? 'Please enter a title'
+                                    : null,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Age Range',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        value: _ageRange,
+                        items: const [
+                          // 0-1, 2-3, 4-9, 10-15, 16-21
+                          DropdownMenuItem(
+                            value: '0-1',
+                            child: Text('0-6 months'),
+                          ),
+                          DropdownMenuItem(
+                            value: '0-1',
+                            child: Text('6-12 months'),
+                          ),
+                          DropdownMenuItem(
+                            value: '2-3',
+                            child: Text('1-2 years'),
+                          ),
+                          DropdownMenuItem(
+                            value: '2-3',
+                            child: Text('2-3 years'),
+                          ),
+                          DropdownMenuItem(
+                            value: '4-9',
+                            child: Text('4-9 years'),
+                          ),
+                          DropdownMenuItem(
+                            value: '10-15',
+                            child: Text(' 10-15 years'),
+                          ),
+                          DropdownMenuItem(
+                            value: '16-21',
+                            child: Text('16-21 years'),
+                          ),
+                        ],
+                        onChanged: (value) => setState(() => _ageRange = value),
+                        validator:
+                            (value) =>
+                                value == null
+                                    ? 'Please select age range'
+                                    : null,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Gender',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        value: _gender,
+                        items: const [
+                          DropdownMenuItem(value: 'male', child: Text('Male')),
+                          DropdownMenuItem(
+                            value: 'female',
+                            child: Text('Female'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'unisex',
+                            child: Text('Unisex'),
+                          ),
+                        ],
+                        onChanged: (value) => setState(() => _gender = value),
+                        validator:
+                            (value) =>
+                                value == null ? 'Please select gender' : null,
+                        hint: const Text('Select gender'),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Size',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: AppColors.secondaryColor,
+                            ),
+                          ),
+                          hintText: 'Select size',
+                        ),
+                        value: _size,
+                        items: const [
+                          DropdownMenuItem(value: 'sm', child: Text('S')),
+                          DropdownMenuItem(value: 'md', child: Text('M')),
+                          DropdownMenuItem(value: 'lg', child: Text('L')),
+                          DropdownMenuItem(value: 'xxl', child: Text('XL')),
+                        ],
+                        onChanged: (value) => setState(() => _size = value),
+                        validator:
+                            (value) =>
+                                value == null ? 'Please select size' : null,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Location',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _locationController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter location',
+                        ),
+                        validator:
+                            (value) =>
+                                (value == null || value.isEmpty)
+                                    ? 'Please enter location'
+                                    : null,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Color',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  title: const Text('Pick a Color'),
+                                  content: SingleChildScrollView(
+                                    child: ColorPicker(
+                                      pickerColor: _selectedColor,
+                                      onColorChanged: (color) {
+                                        setState(() => _selectedColor = color);
+                                      },
+                                      showLabel: true,
+                                      pickerAreaHeightPercent: 0.8,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      child: const Text(
+                                        'OK',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        },
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            color: _selectedColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black26),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter description',
+                          alignLabelWithHint: true,
+                        ),
+                        maxLines: 4,
+                        validator:
+                            (value) =>
+                                (value == null || value.isEmpty)
+                                    ? 'Please enter description'
+                                    : null,
+                      ),
+                      const SizedBox(height: 30),
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomElevatedButton(
+                          borderRadius: 30,
+                          text: 'Post',
+                          onPressed: _submitPost,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
-                'Description',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter description',
-                  alignLabelWithHint: true,
-                ),
-                maxLines: 4,
-                validator: (value) =>
-                (value == null || value.isEmpty)
-                    ? 'Please enter description'
-                    : null,
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                child: CustomElevatedButton(
-                  borderRadius: 30,
-                  text: 'Post',
-                  onPressed: _submitPost,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Obx(
-            () => BottomNavigationBar(
-          backgroundColor: AppColors.bottom_navigation_bg_color,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: currentIndex.value,
-          selectedItemColor: AppColors.secondaryColor,
-          unselectedItemColor: AppColors.onSecondary,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          onTap: (index) => _onItemTapped(index),
-          items: [
-            _buildNavBarItem('assets/icons/home_icon.svg', 'Home', 0),
-            _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist', 1),
-            _buildNavBarItem('assets/icons/post_icon.svg', 'Post', 2),
-            _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat', 3),
-            _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile', 4),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:clothing_exchange/images/assets_path.dart';
+import 'package:clothing_exchange/views/main_bottom_nav.dart';
 import 'package:clothing_exchange/views/screens/Auth/signin_screen.dart';
 import 'package:clothing_exchange/views/screens/Splash/onboard_screen.dart';
 import 'package:flutter/material.dart';
@@ -18,12 +19,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashScreen> {
-
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 2), () {
       final token = SharedPrefHelper().getData(AppConstants.token);
-      Get.offAll(() => token == null ? OnboardScreen() : HomeScreen());
+      Get.offAll(() => token == null ? OnboardScreen() : MainBottomNavScreen());
     });
     super.initState();
   }

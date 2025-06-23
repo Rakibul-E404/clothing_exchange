@@ -11,6 +11,12 @@ class FavoriteController extends GetxController {
   var favoriteItems = <FavoriteItem>[].obs;
   var isLoading = false.obs;
 
+  @override
+  void onInit() {
+    fetchFavorites();
+    super.onInit();
+  }
+
   final String baseUrl =
       'https://d7001.sobhoy.com/api/v1/favorite'; // replace with your URL
 
@@ -97,8 +103,9 @@ class FavoriteController extends GetxController {
       debugPrint('====DELETE Product');
       debugPrint(response.body.toString());
       if (response.statusCode == 200 || response.statusCode == 204) {
-        favoriteItems.removeWhere((item) => item.favoriteId == favoriteId);
+        favoriteItems.removeWhere((item) => item.productId == favoriteId);
         isLoading.value = false;
+        Get.find<HomeController>().fetchProducts();
         return true;
       } else {
         Get.snackbar('Error', 'Failed to remove favorite');
@@ -124,4 +131,3 @@ class FavoriteController extends GetxController {
     }
   }
 }
-
