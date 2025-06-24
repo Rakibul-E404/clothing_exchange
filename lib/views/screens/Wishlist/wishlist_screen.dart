@@ -1,4 +1,5 @@
 import 'package:clothing_exchange/controllers/home_controller.dart';
+import 'package:clothing_exchange/views/main_bottom_nav.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:clothing_exchange/utils/colors.dart';
 import 'package:clothing_exchange/views/fonts_style/fonts_style.dart';
 import 'package:clothing_exchange/views/widget/customElevatedButton.dart';
+import '../../../controllers/favoriteController.dart';
 import '../../../controllers/wishlist_controller.dart';
 import '../../../models/favorite_item_model.dart';
 import '../Chat/chat_list_screen.dart';
@@ -16,7 +18,8 @@ import '../Home/home_screen.dart';
 
 class WishlistScreen extends StatelessWidget {
   // Use the correct controller name - either WishlistController or rename your controller to FavoriteController
-  final WishlistController favoriteController = Get.find<WishlistController>();
+  // final WishlistController favoriteController = Get.find<WishlistController>();
+  final FavoriteController favoriteController = Get.find<FavoriteController>();
   final RxInt currentIndex = 1.obs;
 
   WishlistScreen({super.key});
@@ -78,7 +81,6 @@ class WishlistScreen extends StatelessWidget {
     }
   }
 
-
   Widget _buildWishlistContent(List<FavoriteItem> items) {
     return ListView.builder(
       itemCount: items.length,
@@ -99,15 +101,21 @@ class WishlistScreen extends StatelessWidget {
               width: 60,
               height: 60,
               fit: BoxFit.cover,
-              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+              loadingBuilder: (
+                BuildContext context,
+                Widget child,
+                ImageChunkEvent? loadingProgress,
+              ) {
                 if (loadingProgress == null) {
                   return child;
                 } else {
                   return Center(
                     child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                          : null,
+                      value:
+                          loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  (loadingProgress.expectedTotalBytes ?? 1)
+                              : null,
                     ),
                   );
                 }
@@ -117,7 +125,8 @@ class WishlistScreen extends StatelessWidget {
               },
             ),
             title: Text(
-              item.title.isNotEmpty ? item.title.toUpperCase() : 'No Title', // Add fallback for title
+              item.title.isNotEmpty ? item.title.toUpperCase() : 'No Title',
+              // Add fallback for title
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Column(
@@ -138,28 +147,34 @@ class WishlistScreen extends StatelessWidget {
               icon: const Icon(CupertinoIcons.delete_simple, color: Colors.red),
               onPressed: () async {
                 // Make sure your controller has this method
-                // await favoriteController.removeFavorite(item.productId);
+                await favoriteController.removeFavorite(item.productId);
+                Get.snackbar(
+                  'Removed',
+                  'Product Removed From Wishlist',
+
+                );
               },
             ),
             onTap: () {
               // Navigate to ProductDetailsScreen
-              Get.to(() => ProductDetailsScreen(
-                title: item.title,
-                productId: item.productId,
-                age: item.age,
-                size: item.size,
-                gender: item.gender,
-                location: item.location,
-                imageUrl: imageUrl,
-                description: item.description,
-              ));
+              Get.to(
+                () => ProductDetailsScreen(
+                  title: item.title,
+                  productId: item.productId,
+                  age: item.age,
+                  size: item.size,
+                  gender: item.gender,
+                  location: item.location,
+                  imageUrl: imageUrl,
+                  description: item.description,
+                ),
+              );
             },
           ),
         );
       },
     );
   }
-
 
   Widget _buildEmptyWishlist(BuildContext context) {
     return Center(
@@ -176,12 +191,12 @@ class WishlistScreen extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.5,
             child: CustomElevatedButton(
               elevation: 0,
-              text: "Hello World !",
+              text: "Add now",
               textStyle: AppTextFont.regular(
                 15,
                 AppColors.secondary_text_color,
               ),
-              onPressed: () => Get.back(),
+              onPressed: () => Get.offAll(() => MainBottomNavScreen()),
               borderRadius: 30,
             ),
           ),
@@ -191,10 +206,10 @@ class WishlistScreen extends StatelessWidget {
   }
 
   BottomNavigationBarItem _buildNavBarItem(
-      String iconPath,
-      String label,
-      int index,
-      ) {
+    String iconPath,
+    String label,
+    int index,
+  ) {
     return BottomNavigationBarItem(
       icon: SvgPicture.asset(
         iconPath,

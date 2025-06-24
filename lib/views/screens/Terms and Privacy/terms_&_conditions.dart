@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +23,8 @@ class TermsAndConditionsScreen extends StatefulWidget {
   const TermsAndConditionsScreen({super.key});
 
   @override
-  State<TermsAndConditionsScreen> createState() => _TermsAndConditionsScreenState();
+  State<TermsAndConditionsScreen> createState() =>
+      _TermsAndConditionsScreenState();
 }
 
 class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
@@ -48,19 +50,23 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final contentRaw = data['data']?['attributes']?['content'] ?? "No content available";
+        final contentRaw =
+            data['data']?['attributes']?['content'] ?? "No content available";
         final updatedAtRaw = data['data']?['attributes']?['updatedAt'];
 
         final unescape = HtmlUnescape();
         final content = unescape.convert(contentRaw);
 
-        DateTime updatedAt = DateTime.tryParse(updatedAtRaw ?? '') ?? DateTime.now();
+        DateTime updatedAt =
+            DateTime.tryParse(updatedAtRaw ?? '') ?? DateTime.now();
 
         return TermsAndConditionsData(content: content, updatedAt: updatedAt);
       } else if (response.statusCode == 401) {
         throw Exception('Session expired. Please login again.');
       } else {
-        throw Exception('Failed to load data. Status code: ${response.statusCode}');
+        throw Exception(
+          'Failed to load data. Status code: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Failed to load terms and conditions: ${e.toString()}');
@@ -71,10 +77,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Terms & Conditions",
-          style: GoogleFonts.outfit(),
-        ),
+        title: Text("Terms & Conditions", style: GoogleFonts.outfit()),
         leading: IconButton(
           onPressed: () => Get.back(),
           icon: const Icon(Icons.arrow_back_ios_new_outlined),
@@ -104,7 +107,10 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
                           _termsFuture = fetchTermsAndConditions();
                         });
                       },
-                      child: const Text('Retry', style: TextStyle(color: Colors.black)),
+                      child: const Text(
+                        'Retry',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   ],
                 ),
@@ -112,7 +118,9 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
             );
           } else if (snapshot.hasData) {
             final data = snapshot.data!;
-            final formattedDate = DateFormat('MMM d, yyyy').format(data.updatedAt);
+            final formattedDate = DateFormat(
+              'MMM d, yyyy',
+            ).format(data.updatedAt);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -121,21 +129,31 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
                 children: [
                   Text(
                     'Terms & Conditions',
-                    style: AppTextFont.regular(24, AppColors.primary_text_color),
+                    style: AppTextFont.regular(
+                      24,
+                      AppColors.primary_text_color,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Last Update $formattedDate',
-                    style: GoogleFonts.outfit(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                    style: GoogleFonts.outfit(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    data.content,
-                    textAlign: TextAlign.justify,
-                    style: AppTextFont.regular(16, AppColors.primary_text_color),
+                  // Text(
+                  //   data.content,
+                  //   textAlign: TextAlign.justify,
+                  //   style: AppTextFont.regular(16, AppColors.primary_text_color),
+                  // ),
+                  Html(
+                    data: data.content,
+                    style: {
+                      'p': Style(
+                        fontSize: FontSize(16),
+                        color: AppColors.primary_text_color,
+                        textAlign: TextAlign.justify,
+                      ),
+                    },
                   ),
                 ],
               ),

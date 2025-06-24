@@ -49,6 +49,14 @@ dependencies:
   lottie : ^3.3.1
   shimmer: ^3.0.0
   fluttertoast: ^8.2.12
+  #Socket
+  socket_io_client: ^3.1.1
+  # Message
+  grouped_list: ^5.1.2
+  flutter_chat_bubble: ^2.0.2
+  #html_parse:
+  flutter_html: ^3.0.0
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:

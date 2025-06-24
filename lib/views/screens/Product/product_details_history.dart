@@ -95,7 +95,7 @@ class ProductDetailsHistoryScreen extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Product Image
+                          // Product Image - FIXED: Using Image.network instead of Image.asset
                           Container(
                             width: 90,
                             height: 90,
@@ -106,7 +106,8 @@ class ProductDetailsHistoryScreen extends StatelessWidget {
                             child: productImagePath.isNotEmpty
                                 ? ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
+                              child: productImagePath.startsWith('assets/')
+                                  ? Image.asset(
                                 productImagePath,
                                 width: 90,
                                 height: 90,
@@ -116,6 +117,22 @@ class ProductDetailsHistoryScreen extends StatelessWidget {
                                     child: Icon(Icons.image_not_supported,
                                         color: Colors.grey, size: 30),
                                   );
+                                },
+                              )
+                                  : Image.network(
+                                productImagePath,
+                                width: 90,
+                                height: 90,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(
+                                    child: Icon(Icons.image_not_supported,
+                                        color: Colors.grey, size: 30),
+                                  );
+                                },
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return const Center(child: CircularProgressIndicator());
                                 },
                               ),
                             )
@@ -179,66 +196,119 @@ class ProductDetailsHistoryScreen extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
-                      // Exchange User Section
+                      // Exchange User Section - Enhanced user image display
                       Row(
                         children: [
                           Container(
-                            width: 70,
-                            height: 70,
+                            width: 80,
+                            height: 80,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                               color: Colors.grey[200],
+                              border: Border.all(color: accentColor.withOpacity(0.3), width: 2),
                             ),
-                            child: exchangeUserImagePath.isNotEmpty
+                            child: exchangeUserImagePath.isNotEmpty &&
+                                exchangeUserImagePath != 'assets/user_profile_image.png'
                                 ? ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
+                              child: exchangeUserImagePath.startsWith('assets/')
+                                  ? Image.asset(
                                 exchangeUserImagePath,
-                                width: 70,
-                                height: 70,
+                                width: 80,
+                                height: 80,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return const Center(
                                     child: Icon(Icons.person,
-                                        color: Colors.grey, size: 30),
+                                        color: Colors.grey, size: 35),
+                                  );
+                                },
+                              )
+                                  : Image.network(
+                                exchangeUserImagePath,
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  print('User image load error: $error');
+                                  return const Center(
+                                    child: Icon(Icons.person,
+                                        color: Colors.grey, size: 35),
+                                  );
+                                },
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return const Center(
+                                      child: SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(strokeWidth: 2)
+                                      )
                                   );
                                 },
                               ),
                             )
-                                : const Center(
+                                : Center(
                               child: Icon(Icons.person,
-                                  color: Colors.grey, size: 30),
+                                  color: accentColor, size: 35),
                             ),
                           ),
-                          const SizedBox(width: 14),
+                          const SizedBox(width: 16),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  exchangeUserName,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                    color: textColor,
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.person_outline,
+                                        color: accentColor, size: 16),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        exchangeUserName,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                          color: textColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 8),
-                                Text(
-                                  exchangeUserPhone,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.black54,
-                                    letterSpacing: 1.2,
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.phone_outlined,
+                                        color: accentColor, size: 16),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        exchangeUserPhone,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black54,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 6),
-                                Text(
-                                  exchangeUserLocation,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black54,
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.location_on_outlined,
+                                        color: accentColor, size: 16),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        exchangeUserLocation,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

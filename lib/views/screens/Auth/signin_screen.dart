@@ -1,3 +1,5 @@
+import 'package:clothing_exchange/controllers/home_controller.dart';
+import 'package:clothing_exchange/views/main_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -92,8 +94,8 @@ class _SigninScreenState extends State<SigninScreen> {
 
         // Store credentials after successful login
         _storeCredentials(email, password);
-
-        Get.offAll(() => HomeScreen());
+        Get.find<HomeController>().fetchProducts();
+        Get.offAll(() => MainBottomNavScreen());
       }
     } catch (e) {
       setState(() {
@@ -224,33 +226,33 @@ class _SigninScreenState extends State<SigninScreen> {
                       const Spacer(),
                       _isLoading
                           ? Center(
-                        child: SizedBox(
-                          height: 200,
-                          width: 200,
-                          child: Lottie.asset(
-                            'assets/animations/loading.json',
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      )
+                            child: SizedBox(
+                              height: 200,
+                              width: 200,
+                              child: Lottie.asset(
+                                'assets/animations/loading.json',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          )
                           : SizedBox(
-                        width: double.infinity,
-                        child: CustomElevatedButton(
-                          text: 'Sign In',
-                          onPressed: _isLoading ? null : _signInUi,
-                          color: AppColors.custom_Elevated_Button_Color,
-                          textColor:
-                          AppColors.Custom_Outlined_Button_Text_Color,
-                          borderRadius: 32.0,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          elevation: 0.0,
-                          textStyle: AppTextFont.regular(
-                            18,
-                            AppColors.secondary_text_color,
+                            width: double.infinity,
+                            child: CustomElevatedButton(
+                              text: 'Sign In',
+                              onPressed: _isLoading ? null : _signInUi,
+                              color: AppColors.custom_Elevated_Button_Color,
+                              textColor:
+                                  AppColors.Custom_Outlined_Button_Text_Color,
+                              borderRadius: 32.0,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              elevation: 0.0,
+                              textStyle: AppTextFont.regular(
+                                18,
+                                AppColors.secondary_text_color,
+                              ),
+                              child: null,
+                            ),
                           ),
-                          child: null,
-                        ),
-                      ),
                       const SizedBox(height: 24),
                       Center(
                         child: Row(
@@ -275,8 +277,8 @@ class _SigninScreenState extends State<SigninScreen> {
                                 'Sign up',
                                 style: TextStyle(
                                   color:
-                                  AppColors
-                                      .Custom_Outlined_Button_Text_Color,
+                                      AppColors
+                                          .Custom_Outlined_Button_Text_Color,
                                   fontWeight: FontWeight.normal,
                                   fontSize: 16,
                                 ),
@@ -296,8 +298,3 @@ class _SigninScreenState extends State<SigninScreen> {
     );
   }
 }
-
-
-
-
-

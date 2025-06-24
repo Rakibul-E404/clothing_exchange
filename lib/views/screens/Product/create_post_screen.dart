@@ -375,21 +375,21 @@ class _CreatePostPageState extends State<CreatePostPage> {
                         value: _ageRange,
                         items: const [
                           // 0-1, 2-3, 4-9, 10-15, 16-21
+                          // DropdownMenuItem(
+                          //   value: '0-1',
+                          //   child: Text('0-6 months'),
+                          // ),
                           DropdownMenuItem(
                             value: '0-1',
-                            child: Text('0-6 months'),
+                            child: Text('0-12 months'),
                           ),
-                          DropdownMenuItem(
-                            value: '0-1',
-                            child: Text('6-12 months'),
-                          ),
-                          DropdownMenuItem(
-                            value: '2-3',
-                            child: Text('1-2 years'),
-                          ),
+                          // DropdownMenuItem(
+                          //   value: '2-3',
+                          //   child: Text('1-2 years'),
+                          // ),
                           DropdownMenuItem(
                             value: '2-3',
-                            child: Text('2-3 years'),
+                            child: Text('1-3 years'),
                           ),
                           DropdownMenuItem(
                             value: '4-9',

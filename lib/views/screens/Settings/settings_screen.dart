@@ -1,5 +1,6 @@
 import 'package:clothing_exchange/utils/colors.dart';
 import 'package:clothing_exchange/views/fonts_style/fonts_style.dart';
+import 'package:clothing_exchange/views/main_bottom_nav.dart';
 import 'package:clothing_exchange/views/screens/About%20us/about_us_screen.dart';
 import 'package:clothing_exchange/views/screens/Home/home_screen.dart';
 import 'package:clothing_exchange/views/screens/Legal%20Notice/legal_notice_screen.dart';
@@ -30,7 +31,8 @@ class SettingsScreen extends StatelessWidget {
         ),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () => Get.offAll(HomeScreen(), arguments: 0),
+          // onPressed: () => Get.offAll(MainBottomNavScreen(), arguments: 0),
+          onPressed: () => Get.back(),
           icon: Icon(Icons.arrow_back_ios),
         ),
       ),

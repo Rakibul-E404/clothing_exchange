@@ -43,11 +43,11 @@ class ChatService {
         Get.find<ChatController>().fetchSingleMessage(
           conversationId: conversationId,
         );
-        Get.to(
-          () => InboxChatScreen(
-            name: jsonResponse['data']['attributes']['receiver']['name'],
-          ),
-        );
+        // Get.to(
+        //   () => InboxChatScreen(
+        //     name: jsonResponse['data']['attributes']['receiver']['name'],
+        //   ),
+        // );
 
         // Get.to(() => ChatListScreen());
         // return jsonResponse['data'];
@@ -87,4 +87,7 @@ class ChatService {
       // );
     }
   }
+
+
+
 }

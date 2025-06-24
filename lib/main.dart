@@ -1,3 +1,4 @@
+import 'package:clothing_exchange/controllers/home_controller.dart';
 import 'package:clothing_exchange/utils/colors.dart';
 import 'package:clothing_exchange/views/screens/Chat/inbox_chat_screen.dart';
 import 'package:clothing_exchange/views/screens/Splash/splash_screen.dart';
@@ -58,6 +59,7 @@ class ControllerBinder extends Bindings {
   void dependencies() {
     Get.put(ChatController());
     Get.put(FavoriteController());
-    Get.put(WishlistController());
+    Get.put(HomeController());
+    // Get.put(WishlistController());
   }
 }
