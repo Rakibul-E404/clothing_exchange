@@ -34,7 +34,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
 
- // Set to 3 for Chat
+  // Set to 3 for Chat
   Future<String?> _getToken() async {
     final token = await SharedPrefHelper().getData(AppConstants.token);
     return token as String?;
@@ -69,9 +69,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
           final formattedTime = DateFormat.jm().format(createdAt);
 
           final String avatarUrl =
-              chatPartner['image'] != null && chatPartner['image'].isNotEmpty
-                  ? '${AppUrl.imageBaseUrl}' + chatPartner['image']
-                  : 'assets/default_avatar.png';
+          chatPartner['image'] != null && chatPartner['image'].isNotEmpty
+              ? '${AppUrl.imageBaseUrl}' + chatPartner['image']
+              : 'assets/default_avatar.png';
           debugPrint(avatarUrl.toString());
 
           return {
@@ -158,7 +158,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
-   //  final ChatController chatController = Get.find<ChatController>();
+    //  final ChatController chatController = Get.find<ChatController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -167,22 +167,22 @@ class _ChatListScreenState extends State<ChatListScreen> {
         automaticallyImplyLeading: false,
       ),
       body:Obx(()=>_chatCtrl.conversationsLoading.value ?Center(child: CircularProgressIndicator()):
-         ListView.builder(
-           itemCount: _chatCtrl.convertionsMessageListModel.length,
-           itemBuilder: (context, index) {
-            final chat = _chatCtrl.convertionsMessageListModel[index];
+      ListView.builder(
+        itemCount: _chatCtrl.convertionsMessageListModel.length,
+        itemBuilder: (context, index) {
+          final chat = _chatCtrl.convertionsMessageListModel[index];
 
-            final reciveImage = currentUserId==chat.receiver!.id ? chat.sender!.image :chat.receiver!.image;
-            final reciveName = currentUserId==chat.receiver!.id ? chat.sender!.name :chat.receiver!.name;
-           return ListTile(
+          final reciveImage = currentUserId==chat.receiver!.id ? chat.sender!.image :chat.receiver!.image;
+          final reciveName = currentUserId==chat.receiver!.id ? chat.sender!.name :chat.receiver!.name;
+          return ListTile(
 
             leading: CircleAvatar(
               backgroundImage: NetworkImage("${AppUrl.imageBaseUrl}${chat.product!.image}"),
             ),
             title: Text('${chat.product!.title}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
+              style: const TextStyle(
+                fontSize: 14,
+              ),
             ),
             subtitle: Text('${chat.lastMessage !=null ? chat.lastMessage!.text : ""}'),
 
@@ -228,157 +228,122 @@ class _ChatListScreenState extends State<ChatListScreen> {
         },
 
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   backgroundColor: AppColors.bottom_navigation_bg_color,
-      //   type: BottomNavigationBarType.fixed,
-      //   currentIndex: _currentIndex,
-      //   selectedItemColor: AppColors.secondaryColor,
-      //   unselectedItemColor: AppColors.onSecondary,
-      //   showSelectedLabels: true,
-      //   showUnselectedLabels: true,
-      //   selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-      //   onTap: (index) {
-      //     if (_currentIndex == index) return;
-      //     switch (index) {
-      //       case 0:
-      //         Get.off(() => HomeScreen());
-      //         break;
-      //       case 1:
-      //         Get.off(() => WishlistScreen());
-      //         break;
-      //       case 2:
-      //         Get.off(() => const CreatePostPage());
-      //         break;
-      //       case 3:
-      //         // Already on chat screen
-      //         break;
-      //       case 4:
-      //         Get.off(() => const ProfileScreen());
-      //         break;
-      //       default:
-      //         break;
-      //     }
-      //   },
-      //   items: [
-      //     _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
-      //     _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
-      //     _buildNavBarItem('assets/icons/post_icon.svg', 'Post'),
-      //     _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat'),
-      //     _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile'),
-      //   ],
-      // ),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   backgroundColor: AppColors.bottom_navigation_bg_color,
+        //   type: BottomNavigationBarType.fixed,
+        //   currentIndex: _currentIndex,
+        //   selectedItemColor: AppColors.secondaryColor,
+        //   unselectedItemColor: AppColors.onSecondary,
+        //   showSelectedLabels: true,
+        //   showUnselectedLabels: true,
+        //   selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        //   onTap: (index) {
+        //     if (_currentIndex == index) return;
+        //     switch (index) {
+        //       case 0:
+        //         Get.off(() => HomeScreen());
+        //         break;
+        //       case 1:
+        //         Get.off(() => WishlistScreen());
+        //         break;
+        //       case 2:
+        //         Get.off(() => const CreatePostPage());
+        //         break;
+        //       case 3:
+        //         // Already on chat screen
+        //         break;
+        //       case 4:
+        //         Get.off(() => const ProfileScreen());
+        //         break;
+        //       default:
+        //         break;
+        //     }
+        //   },
+        //   items: [
+        //     _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
+        //     _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
+        //     _buildNavBarItem('assets/icons/post_icon.svg', 'Post'),
+        //     _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat'),
+        //     _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile'),
+        //   ],
+        // ),
 
-      ),),
-
-      // body: FutureBuilder<List<Map<String, dynamic>>>(
-      //   future: fetchChatList(),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return const Center(child: CircularProgressIndicator());
-      //     } else if (snapshot.hasError) {
-      //       return Center(child: Text('Error: ${snapshot.error}'));
-      //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-      //       return const Center(child: Text('No chats found.'));
-      //     }
-      //
-      //     final chats = snapshot.data!;
-      //
-      //     return ListView.builder(
-      //       itemCount: chats.length,
-      //       itemBuilder: (context, index) {
-      //         final chat = chats[index];
-      //         debugPrint('details of chat list');
-      //         debugPrint(chat.toString());
-      //
-      //         return ListTile(
-      //           leading:
-      //               chat['avatar'].toString().startsWith('assets/')
-      //                   ? CircleAvatar(
-      //                     backgroundImage: AssetImage(chat['avatar']),
-      //                   )
-      //                   : CircleAvatar(
-      //                     backgroundImage: NetworkImage(chat['avatar']),
-      //                   ),
-      //           title: Text(chat['name']),
-      //           subtitle: Text(chat['message']),
-      //           trailing: Column(
-      //             mainAxisAlignment: MainAxisAlignment.center,
-      //             children: [
-      //               Text(chat['time'], style: const TextStyle(fontSize: 12)),
-      //               if (chat['unread'] > 0)
-      //                 CircleAvatar(
-      //                   radius: 10,
-      //                   backgroundColor: Colors.orange,
-      //                   child: Text(
-      //                     chat['unread'].toString(),
-      //                     style: const TextStyle(
-      //                       fontSize: 12,
-      //                       color: Colors.white,
-      //                     ),
-      //                   ),
-      //                 ),
-      //             ],
-      //           ),
-      //           onTap: () {
-      //             debugPrint(chat['conversationId']);
-      //             chatController.fetchSingleMessage(
-      //               conversationId: chat['conversationId'],
-      //             );
-      //
-      //             Navigator.push(
-      //               context,
-      //               MaterialPageRoute(
-      //                 builder: (_) => InboxChatScreen(name: chat['name']),
-      //               ),
-      //             );
-      //           },
-      //         );
-      //       },
-      //     );
-      //   },
-      // ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppColors.bottom_navigation_bg_color,
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        selectedItemColor: AppColors.secondaryColor,
-        unselectedItemColor: AppColors.onSecondary,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        onTap: (index) {
-          if (_currentIndex == index) return;
-          switch (index) {
-            case 0:
-              Get.off(() => HomeScreen());
-              break;
-            case 1:
-              Get.off(() => WishlistScreen());
-              break;
-            case 2:
-              Get.off(() => const CreatePostPage());
-              break;
-            case 3:
-              // Already on chat screen
-              break;
-            case 4:
-              Get.off(() => const ProfileScreen());
-              break;
-            default:
-              break;
-          }
-        },
-
-
-        items: [
-          _buildNavBarItem('assets/icons/home_icon.svg', 'Home'),
-          _buildNavBarItem('assets/icons/wishlist_icon.svg', 'Wishlist'),
-          _buildNavBarItem('assets/icons/post_icon.svg', 'Post'),
-          _buildNavBarItem('assets/icons/chat_icon.svg', 'Chat'),
-          _buildNavBarItem('assets/icons/profile_icon.svg', 'Profile'),
-        ],
       ),
 
-    );
-  }
+
+    // body: FutureBuilder<List<Map<String, dynamic>>>(
+    //   future: fetchChatList(),
+    //   builder: (context, snapshot) {
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       return const Center(child: CircularProgressIndicator());
+    //     } else if (snapshot.hasError) {
+    //       return Center(child: Text('Error: ${snapshot.error}'));
+    //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+    //       return const Center(child: Text('No chats found.'));
+    //     }
+    //
+    //     final chats = snapshot.data!;
+    //
+    //     return ListView.builder(
+    //       itemCount: chats.length,
+    //       itemBuilder: (context, index) {
+    //         final chat = chats[index];
+    //         debugPrint('details of chat list');
+    //         debugPrint(chat.toString());
+    //
+    //         return ListTile(
+    //           leading:
+    //               chat['avatar'].toString().startsWith('assets/')
+    //                   ? CircleAvatar(
+    //                     backgroundImage: AssetImage(chat['avatar']),
+    //                   )
+    //                   : CircleAvatar(
+    //                     backgroundImage: NetworkImage(chat['avatar']),
+    //                   ),
+    //           title: Text(chat['name']),
+    //           subtitle: Text(chat['message']),
+    //           trailing: Column(
+    //             mainAxisAlignment: MainAxisAlignment.center,
+    //             children: [
+    //               Text(chat['time'], style: const TextStyle(fontSize: 12)),
+    //               if (chat['unread'] > 0)
+    //                 CircleAvatar(
+    //                   radius: 10,
+    //                   backgroundColor: Colors.orange,
+    //                   child: Text(
+    //                     chat['unread'].toString(),
+    //                     style: const TextStyle(
+    //                       fontSize: 12,
+    //                       color: Colors.white,
+    //                     ),
+    //                   ),
+    //                 ),
+    //             ],
+    //           ),
+    //           onTap: () {
+    //             debugPrint(chat['conversationId']);
+    //             chatController.fetchSingleMessage(
+    //               conversationId: chat['conversationId'],
+    //             );
+    //
+    //             Navigator.push(
+    //               context,
+    //               MaterialPageRoute(
+    //                 builder: (_) => InboxChatScreen(name: chat['name']),
+    //               ),
+    //             );
+    //           },
+    //         );
+    //       },
+    //     );
+    //   },
+    // ),
+
+
+
+
+
+
+
+    );}
 }

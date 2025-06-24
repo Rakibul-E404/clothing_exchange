@@ -1,5 +1,4 @@
 import 'package:clothing_exchange/controllers/home_controller.dart';
-import 'package:clothing_exchange/controllers/wishlist_controller.dart';
 import 'package:clothing_exchange/views/screens/Chat/chat_list_screen.dart';
 import 'package:clothing_exchange/views/screens/Home/home_screen.dart';
 import 'package:clothing_exchange/views/screens/Product/create_post_screen.dart';
@@ -10,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import '../Utils/colors.dart';
+import '../controllers/favoriteController.dart';
 
 class MainBottomNavScreen extends StatefulWidget {
   const MainBottomNavScreen({super.key});
@@ -81,7 +81,7 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
                   Get.find<HomeController>().fetchProducts();
                 }
                 if (index == 1) {
-                  Get.find<WishlistController>().fetchFavorites();
+                  Get.find<FavoriteController>().fetchFavorites();
                 }
                 // _pageController.animateToPage(
                 //   index,
@@ -127,8 +127,6 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
     );
   }
 }
-
-
 
 
 

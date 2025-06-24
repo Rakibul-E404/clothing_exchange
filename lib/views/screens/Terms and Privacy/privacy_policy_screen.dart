@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -137,10 +138,20 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    data.content,
-                    textAlign: TextAlign.justify,
-                    style: AppTextFont.regular(16, AppColors.primary_text_color),
+                  // Text(
+                  //   data.content,
+                  //   textAlign: TextAlign.justify,
+                  //   style: AppTextFont.regular(16, AppColors.primary_text_color),
+                  // ),
+                  Html(
+                    data: data.content,
+                    style: {
+                      'h1': Style(
+                        fontSize: FontSize(16),
+                         color: AppColors.primary_text_color,
+                        textAlign: TextAlign.justify,
+                      ),
+                    },
                   ),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../Utils/app_constants.dart';
 import '../../../Utils/app_url.dart';
+import '../../../Utils/colors.dart';
 import '../../../Utils/helper_shared_pref.dart';
 
 class AboutUsData {
@@ -133,9 +135,19 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    data.content,
-                    textAlign: TextAlign.justify,
+                  // Text(
+                  //   data.content,
+                  //   textAlign: TextAlign.justify,
+                  // ),
+                  Html(
+                    data: data.content,
+                    style: {
+                      'p': Style(
+                        fontSize: FontSize(16),
+                        color: AppColors.primary_text_color,
+                        textAlign: TextAlign.justify,
+                      ),
+                    },
                   ),
                 ],
               ),

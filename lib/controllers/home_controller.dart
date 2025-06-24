@@ -4,6 +4,7 @@ import 'package:clothing_exchange/Utils/app_constants.dart';
 import 'package:clothing_exchange/Utils/helper_shared_pref.dart';
 import 'package:clothing_exchange/models/product_model.dart';
 import 'package:clothing_exchange/Utils/app_url.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,6 +21,7 @@ class HomeController extends GetxController {
 
   Future<void> fetchProducts() async {
     try {
+      // productList.clear();
       isLoading(true);
       errorMessage('');
 
@@ -35,14 +37,18 @@ class HomeController extends GetxController {
       log('API Response: ${response.body}');
 
       if (response.statusCode == 200) {
+        print('oksjdksjdskd');
         final jsonMap = jsonDecode(response.body);
-        final List<dynamic> productListJson = jsonMap['data']['attributes']['data'];
-
-        productList.value = productListJson.map<Product>((json) {
-          final product = Product.fromJson(json);
-          log('Loaded Product: ${product.title} | Age: ${product.age}');
-          return product;
-        }).toList();
+        debugPrint(jsonMap.toString());
+        final List<dynamic> productListJson =
+            jsonMap['data']['attributes']['data'];
+        debugPrint(productListJson.length.toString());
+        productList.value =
+            productListJson.map<Product>((json) {
+              final product = Product.fromJson(json);
+              log('Loaded Product: ${product.title} | id: ${product.id}');
+              return product;
+            }).toList();
       } else {
         errorMessage('Failed to load products (${response.statusCode})');
       }
@@ -58,10 +64,8 @@ class HomeController extends GetxController {
     await fetchProducts();
   }
 
-
-  addWishList (String productId,int index)async{
-
-    var token= await SharedPrefHelper().getData(AppConstants.token);
+  addWishList(String productId, int index) async {
+    var token = await SharedPrefHelper().getData(AppConstants.token);
 
     try {
       final response = await http.post(
@@ -74,7 +78,6 @@ class HomeController extends GetxController {
 
       // removeFavorite(productId) ;
       if (response.statusCode == 200 || response.statusCode == 201) {
-
         productList[index].wishlistStatus = !productList[index].wishlistStatus;
         productList.refresh();
       }
@@ -84,7 +87,5 @@ class HomeController extends GetxController {
       isLoading.value = false;
       return false;
     }
-
   }
 }
-

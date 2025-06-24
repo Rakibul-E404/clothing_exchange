@@ -4,6 +4,7 @@ import 'package:clothing_exchange/Utils/app_url.dart';
 import 'package:clothing_exchange/models/conversation_model.dart';
 import 'package:clothing_exchange/models/inbox_model.dart';
 import 'package:clothing_exchange/utils/colors.dart';
+import 'package:clothing_exchange/views/main_bottom_nav.dart';
 import 'package:clothing_exchange/views/screens/Chat/chat_list_screen.dart';
 import 'package:clothing_exchange/views/screens/Home/home_screen.dart';
 import 'package:clothing_exchange/views/widget/CustomOutlinedButton.dart';
@@ -100,7 +101,7 @@ class _InboxChatScreenState extends State<InboxChatScreen> {
                     left: 0,
                     child: IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: Icon(Icons.arrow_back),
+                      icon: Icon(Icons.arrow_back_ios),
                       iconSize: 24,
                       padding: EdgeInsets.zero,
                       constraints: BoxConstraints(),
@@ -490,7 +491,7 @@ void _showConfirmationDialog(BuildContext context) {
           borderRadius: 30,
           text: "Confirm",
           onPressed: () {
-            Get.to(HomeScreen());
+            Get.offAll(()=> MainBottomNavScreen());
           },
         ),
       ],

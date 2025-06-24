@@ -72,7 +72,7 @@ class FavoriteController extends GetxController {
       // removeFavorite(productId) ;
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.find<HomeController>().fetchProducts();
-        await fetchFavorites();
+        // await fetchFavorites();
         debugPrint('${favoriteItems.length}');
         isLoading.value = false;
         return true;

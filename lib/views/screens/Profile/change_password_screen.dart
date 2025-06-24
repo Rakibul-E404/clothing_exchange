@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:clothing_exchange/images/assets_path.dart';
-import 'package:clothing_exchange/views/screens/Profile/profile_screen.dart';
+import 'package:clothing_exchange/views/main_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../Utils/app_constants.dart';
+import '../../../Utils/app_url.dart';
+import '../../../Utils/helper_shared_pref.dart';
 import '../../fonts_style/fonts_style.dart';
 import '../../widget/customElevatedButton.dart';
 import '../../widget/customTextField.dart';
@@ -19,6 +24,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+  bool _isOldPasswordVisible = false;
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -31,6 +39,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Get.back(); // This will navigate back to the previous screen
+          },
+        ),
+      ),
       body: Stack(
         children: [
           // Main Content
@@ -95,13 +111,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             CustomTextField(
               hintText: 'Enter Current Password',
               svgIconPath: AppAssets.passwordIcon,
-              obscureText: true,
+              obscureText: !_isOldPasswordVisible,
               controller: _oldPasswordController,
               hoverColor: AppColors.hover_color,
               validator: (value) {
                 if (value == null || value.isEmpty) return 'Please enter your current password';
                 return null;
               },
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isOldPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: AppColors.primary_text_color,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isOldPasswordVisible = !_isOldPasswordVisible;
+                  });
+                },
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -114,7 +141,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             CustomTextField(
               hintText: 'Enter New Password',
               svgIconPath: AppAssets.passwordIcon,
-              obscureText: true,
+              obscureText: !_isNewPasswordVisible,
               controller: _newPasswordController,
               hoverColor: AppColors.hover_color,
               validator: (value) {
@@ -123,6 +150,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 if (value == _oldPasswordController.text) return 'New password must be different from current password';
                 return null;
               },
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: AppColors.primary_text_color,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isNewPasswordVisible = !_isNewPasswordVisible;
+                  });
+                },
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -135,7 +173,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             CustomTextField(
               svgIconPath: AppAssets.passwordIcon,
               hintText: 'Confirm New Password',
-              obscureText: true,
+              obscureText: !_isConfirmPasswordVisible,
               controller: _confirmPasswordController,
               hoverColor: AppColors.hover_color,
               validator: (value) {
@@ -144,6 +182,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 }
                 return null;
               },
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: AppColors.primary_text_color,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                  });
+                },
+              ),
             ),
             const SizedBox(height: 30),
 
@@ -210,7 +259,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 text: 'Back To Profile',
                 onPressed: () {
                   Get.back(); // Close the bottom sheet
-                  Get.offAll(() => ProfileScreen());
+                  Get.offAll(() => MainBottomNavScreen());
                 },
                 color: AppColors.custom_Elevated_Button_Color,
                 textColor: AppColors.Custom_Outlined_Button_Text_Color,
@@ -276,7 +325,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       await Future.delayed(const Duration(seconds: 1));
 
       setState(() => _isLoading = false);
-      _showSuccessBottomSheet();
+      final bool successful = await changePassword(_oldPasswordController.text, _newPasswordController.text);
+      if(successful){
+        _showSuccessBottomSheet();
+      }
     } catch (e) {
       setState(() => _isLoading = false);
       Get.snackbar(
@@ -285,6 +337,35 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         backgroundColor: AppColors.error,
         colorText: Colors.white,
       );
+    }
+  }
+
+  Future<bool> changePassword(
+      String oldPassword,
+      String newPassword,
+      ) async {
+    try {
+      final token = await SharedPrefHelper().getData(AppConstants.token);
+      final response = await http.post(
+        Uri.parse(AppUrl.changePassword),
+        headers: {'Content-Type': 'application/json','Authorization': 'Bearer $token',},
+        body: jsonEncode({
+          "oldPassword":"$oldPassword",
+          "newPassword":"$newPassword"
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint(response.body.toString());
+        final res = jsonDecode(response.body);
+        Get.snackbar("Error", res['message']);
+        return false;
+      }
+    } catch (e) {
+      debugPrint('error an error occurred: $e');
+      return false;
     }
   }
 }

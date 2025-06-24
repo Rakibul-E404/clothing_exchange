@@ -478,10 +478,6 @@
 // }
 //
 
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -532,15 +528,19 @@ class _HomeScreenState extends State<HomeScreen> {
   final UserService userService = UserService();
   final TextEditingController _searchController = TextEditingController();
   final RxList<Product> filteredProducts = <Product>[].obs;
-  final HomeController homeController = Get.put(HomeController());
+  final HomeController homeController = Get.find<HomeController>();
   final SearchBoxController searchController = Get.put(SearchBoxController());
 
   @override
   void initState() {
     super.initState();
     _loadUserName();
+    applyFilters();
     ever(homeController.productList, (_) => applyFilters());
-    ever(searchController.searchQuery, (_) => applyFilters()); // Watch search query changes
+    ever(
+      searchController.searchQuery,
+      (_) => applyFilters(),
+    ); // Watch search query changes
   }
 
   Future<void> _loadUserName() async {
@@ -562,92 +562,130 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Product> allProducts = homeController.productList;
 
     // First, filter products based on the search query
-    final List<Product> searchFilteredProducts = allProducts.where((product) {
-      return product.title.toLowerCase().contains(searchController.searchQuery.value.toLowerCase());
-    }).toList();
+    final List<Product> searchFilteredProducts =
+        allProducts.where((product) {
+          return product.title.toLowerCase().contains(
+            searchController.searchQuery.value.toLowerCase(),
+          );
+        }).toList();
 
     // Then, apply age, size, and gender filters to the already filtered products
-    final List<Product> filtered = searchFilteredProducts.where((product) {
-      final bool matchesAge =
-          selectedAgeRange == null ||
+    final List<Product> filtered =
+        searchFilteredProducts.where((product) {
+          final bool matchesAge =
+              selectedAgeRange == null ||
               product.age
                   .replaceAll(RegExp(r'[^0-9-]'), '')
-                  .contains(selectedAgeRange!.replaceAll(RegExp(r'[^0-9-]'), ''));
+                  .contains(
+                    selectedAgeRange!.replaceAll(RegExp(r'[^0-9-]'), ''),
+                  );
 
-      final bool matchesSize =
-          selectedSize == null ||
-              product.size.toLowerCase().startsWith(selectedSize!.toLowerCase()[0]);
+          final bool matchesSize =
+              selectedSize == null ||
+              product.size.toLowerCase().startsWith(
+                selectedSize!.toLowerCase()[0],
+              );
 
-      final bool matchesGender =
-          selectedGender == null ||
+          final bool matchesGender =
+              selectedGender == null ||
               product.gender.toLowerCase() == selectedGender!.toLowerCase() ||
               product.gender.toLowerCase() ==
                   '${selectedGender!.toLowerCase()}s' ||
-              (selectedGender == 'boys' && product.gender.toLowerCase() == 'boy') ||
-              (selectedGender == 'girls' && product.gender.toLowerCase() == 'girl');
+              (selectedGender == 'boys' &&
+                  product.gender.toLowerCase() == 'boy') ||
+              (selectedGender == 'girls' &&
+                  product.gender.toLowerCase() == 'girl');
 
-      debugPrint(product.createdAt.toString());
-      return matchesAge && matchesSize && matchesGender;
-    }).toList();
+          debugPrint(product.createdAt.toString());
+          return matchesAge && matchesSize && matchesGender;
+        }).toList();
 
     // Update the filtered products list
     filteredProducts.value = filtered;
   }
 
   // Filter for recently uploaded products (last 24 hours)
-  List<Product> getRecentlyUploadedProducts() {
+  RxList<Product> getRecentlyUploadedProducts() {
     final currentTime = DateTime.now();
 
     final twentyFourHoursAgo = currentTime.subtract(Duration(hours: 24));
 
-    debugPrint('${twentyFourHoursAgo}');
-    return homeController.productList.where((product) {
-      final DateTime createdAt = DateTime.parse(product.createdAt.toString());
-      return createdAt.isAfter(twentyFourHoursAgo);
-    }).toList();
+    debugPrint('hi ---- ${twentyFourHoursAgo}');
+    final sohan =
+        homeController.productList
+            .where((product) {
+              final DateTime createdAt = DateTime.parse(
+                product.createdAt.toString(),
+              );
+
+              debugPrint('helooo ----- ${createdAt}');
+
+              debugPrint(
+                createdAt.difference(DateTime.now()).inHours.toString(),
+              );
+              return createdAt.difference(DateTime.now()).inHours < -24
+                  ? false
+                  : true;
+            })
+            .toList()
+            .obs;
+
+    debugPrint('=======>');
+    debugPrint(sohan.toString());
+    return sohan;
   }
 
   List<Product> getDisplayProducts() {
-    return filteredProducts.isEmpty && searchController.searchQuery.isNotEmpty
-        ? [] // If there are no filtered products and the search query is active, return an empty list
-        : filteredProducts;
+    final List<Product> pop =
+        filteredProducts.isEmpty && searchController.searchQuery.isNotEmpty
+            ? [] // If there are no filtered products and the search query is active, return an empty list
+            : filteredProducts;
+
+    debugPrint('pop =====> ');
+    debugPrint(pop.toString());
+
+    return pop;
   }
 
   void _showFilterBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => FilterBottomSheet(
-        selectedAgeRange: selectedAgeRange,
-        selectedSize: selectedSize,
-        selectedGender: selectedGender,
-        onApply: (age, size, gender) {
-          setState(() {
-            selectedAgeRange = age;
-            selectedSize = size;
-            selectedGender = gender;
-            applyFilters();
-          });
-        },
-      ),
+      builder:
+          (_) => FilterBottomSheet(
+            selectedAgeRange: selectedAgeRange,
+            selectedSize: selectedSize,
+            selectedGender: selectedGender,
+            onApply: (age, size, gender) {
+              setState(() {
+                selectedAgeRange = age;
+                selectedSize = size;
+                selectedGender = gender;
+                applyFilters();
+              });
+            },
+          ),
     );
   }
 
-  Widget _buildProductCard(Product product ,int index) {
+  Widget _buildProductCard(Product product) {
     final RxBool isFavorite = favoriteController.isFavorite(product.id).obs;
     final fullImageUrl = '${AppUrl.imageBaseUrl}${product.image}';
 
     return GestureDetector(
-      onTap: () => Get.to(() => ProductDetailsScreen(
-        title: product.title,
-        age: product.age,
-        size: product.size,
-        gender: product.gender,
-        location: product.location,
-        imageUrl: fullImageUrl,
-        description: product.description,
-        productId: product.id,
-      )),
+      onTap:
+          () => Get.to(
+            () => ProductDetailsScreen(
+              title: product.title,
+              age: product.age,
+              size: product.size,
+              gender: product.gender,
+              location: product.location,
+              imageUrl: fullImageUrl,
+              description: product.description,
+              productId: product.id,
+            ),
+          ),
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -662,15 +700,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: CachedNetworkImage(
                       imageUrl: fullImageUrl,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(color: Colors.white),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey[200],
-                        child: const Icon(Icons.error, color: Colors.grey),
-                      ),
+                      placeholder:
+                          (context, url) => Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(color: Colors.white),
+                          ),
+                      errorWidget:
+                          (context, url, error) => Container(
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.error, color: Colors.grey),
+                          ),
                     ),
                   ),
                 ),
@@ -700,15 +740,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            /// Button
             Positioned(
               top: 10,
               right: 10,
               child: IconButton(
                 icon: Icon(
-
-                  product.wishlistStatus ? Icons.favorite : Icons.favorite_border,
-                  color: product.wishlistStatus ? Colors.red : AppColors.secondaryColor,
+                  product.wishlistStatus
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color:
+                      product.wishlistStatus
+                          ? Colors.red
+                          : AppColors.secondaryColor,
                 ),
                 onPressed: () async {
                   if (favoriteController.isLoading.value == true) {
@@ -720,47 +763,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {});
                 },
               ),
-
-
-                  // isFavorite.value ? Icons.favorite : Icons.favorite_border,
-                  product.wishlistStatus
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color:
-                  product.wishlistStatus
-                          ? Colors.red
-                          : AppColors.secondaryColor,
-                ),
-                onPressed: () async {
-                  homeController.addWishList(product.id, index);
-                  setState(() {
-
-                  });
-                  // isFavorite.toggle();
-                  // await favoriteController.addFavorite(product.id) ;
-                  // product.wishlistStatus
-                  //     ? await favoriteController.removeFavorite(product.id)
-                  //     : await favoriteController.addFavorite(product.id);
-
-                  // try {
-                  //   if (isFavorite.value) {
-                  //     await favoriteController.addFavorite(product.id);
-                  //   } else {
-                  //     final favItem = favoriteController
-                  //         .getFavoriteItemByProductId(product.id);
-                  //     if (favItem != null) {
-                  //       await favoriteController.removeFavorite(
-                  //         favItem.favoriteId,
-                  //       );
-                  //     }
-                  //   }
-                  // } catch (e) {
-                  //   isFavorite.toggle();
-                  //   Get.snackbar('Error', 'Failed to update favorite');
-                  // }
-                },
-              )
-
             ),
           ],
         ),
@@ -843,35 +845,22 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           return products.isEmpty
               ? Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
-                const SizedBox(height: 10),
-                Text(
-                  searchController.searchQuery.isNotEmpty
-                      ? 'No products found for "${searchController.searchQuery.value}"'
-                      : 'No products match your filters',
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                  textAlign: TextAlign.center,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
+                    const SizedBox(height: 10),
+                    Text(
+                      searchController.searchQuery.isNotEmpty
+                          ? 'No products found for "${searchController.searchQuery.value}"'
+                          : 'No products match your filters',
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )
+              )
               : GridView.builder(
-
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.8,
-              crossAxisSpacing: 15,
-              mainAxisSpacing: 15,
-            ),
-            itemCount: products.length,
-            itemBuilder: (_, index) => _buildProductCard(products[index]),
-          );
-
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -881,8 +870,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisSpacing: 15,
                 ),
                 itemCount: products.length,
-                itemBuilder: (_, index) => _buildProductCard(products[index],index),
-
+                itemBuilder: (_, index) => _buildProductCard(products[index]),
+              );
         }),
       ],
     );
@@ -940,17 +929,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       isLoadingUserName
                           ? SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: Lottie.asset(
-                          'assets/animations/loading.json',
-                          fit: BoxFit.contain,
-                        ),
-                      )
+                            height: 60,
+                            width: 60,
+                            child: Lottie.asset(
+                              'assets/animations/loading.json',
+                              fit: BoxFit.contain,
+                            ),
+                          )
                           : Text(
-                        'Hi, $userName',
-                        style: AppTextFont.bold(24, AppColors.onSecondary),
-                      ),
+                            'Hi, $userName',
+                            style: AppTextFont.bold(24, AppColors.onSecondary),
+                          ),
                       GestureDetector(
                         onTap: () => Get.to(() => const NotificationScreen()),
                         child: SvgPicture.asset(
@@ -1015,7 +1004,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     _buildSectionTitle('Recently Uploaded'),
-                    _buildProductGrid(getRecentlyUploadedProducts()), // Show only recent products
+                    Obx(() => _buildProductGrid(getRecentlyUploadedProducts())),
+
+                    // Show only recent products
                     const SizedBox(height: 16),
                     _buildSectionTitle('All Items'),
                     _buildProductGrid(getDisplayProducts()),
