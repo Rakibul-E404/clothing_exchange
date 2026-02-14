@@ -109,7 +109,7 @@ class SettingsScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                "Privacy Plicy",
+                                "Privacy Policy",
                                 style: AppTextFont.regular(
                                     15, AppColors.primary_text_color),
                               ),

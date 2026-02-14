@@ -36,14 +36,6 @@ class OnboardScreen extends StatelessWidget {
                 child: CustomOutlinedButton(
                   onPressed: () {
                     Get.offAll(() => SigninScreen());
-                    // final token =
-                    //     SharedPrefHelper().getData(AppConstants.token);
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (_) =>
-                    //           token == null ? SigninScreen() : HomeScreen()),
-                    // );
                   },
                   borderRadius: 32,
                   borderWidth: 1.4,

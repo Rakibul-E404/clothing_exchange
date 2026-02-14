@@ -120,11 +120,15 @@ class ProfileScreen extends StatelessWidget {
                     icon: 'assets/icons/person-circle-svgrepo-com.svg',
                     onTap: () => Get.to(PersonalInformationScreen()),
                   ),
-                  _buildMenuButton(
-                    label: "Subscription Package",
-                    icon: 'assets/icons/basic_subscription_image.svg',
-                    onTap: () => Get.to(SubscriptionPackageScreen()),
-                  ),
+                  /// ==================================================
+                  /// ------------------ Important and will be added next ------------
+                  /// ==================================================
+                  // _buildMenuButton(
+                  //   label: "Subscription Package",
+                  //   icon: 'assets/icons/basic_subscription_image.svg',
+                  //   onTap: () => Get.to(SubscriptionPackageScreen()),
+                  // ),
+                  /// ------------------=---------------------------------=------------
                   _buildMenuButton(
                     label: "My Product History",
                     icon: 'assets/icons/product_history_icon.svg',

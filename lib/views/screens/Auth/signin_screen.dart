@@ -10,7 +10,6 @@ import '../../../utils/colors.dart';
 import '../../fonts_style/fonts_style.dart';
 import '../../widget/customElevatedButton.dart';
 import '../../widget/customTextField.dart';
-import '../Home/home_screen.dart';
 import 'forgot_password_screen.dart';
 import 'signup_screen.dart';
 
@@ -48,11 +47,11 @@ class _SigninScreenState extends State<SigninScreen> {
   }
 
   // Function to store the user's credentials
-  Future<void> _storeCredentials(String email, String password) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('email', email);
-    prefs.setString('password', password);
-  }
+  // Future<void> _storeCredentials(String email, String password) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   prefs.setString('email', email);
+  //   prefs.setString('password', password);
+  // }
 
   Future<void> _signInUi() async {
     final email = _emailController.text.trim();
@@ -90,10 +89,10 @@ class _SigninScreenState extends State<SigninScreen> {
         );
       } else {
         _userId = response['userId'];
-        print('Logged in userId: $_userId');
+        // print('Logged in userId: $_userId');
 
         // Store credentials after successful login
-        _storeCredentials(email, password);
+        // _storeCredentials(email, password);
         Get.find<HomeController>().fetchProducts();
         Get.offAll(() => MainBottomNavScreen());
       }

@@ -16,7 +16,7 @@ import '../Wishlist/wishlist_screen.dart';
 import '../Product/create_post_screen.dart';
 
 class ChatListScreen extends StatefulWidget {
-  ChatListScreen({super.key});
+  const ChatListScreen({super.key});
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
@@ -164,10 +164,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Chats'),
+        backgroundColor: AppColors.primaryColor,
         automaticallyImplyLeading: false,
       ),
       body:Obx(()=>_chatCtrl.conversationsLoading.value ?Center(child: CircularProgressIndicator()):
-      ListView.builder(
+      _chatCtrl.convertionsMessageListModel.isEmpty ? Center(child: Expanded(
+        child: Text("No Conversation Data Available!",
+          style: TextStyle(
+              fontSize: 24,
+          ),),
+      ),) : ListView.builder(
         itemCount: _chatCtrl.convertionsMessageListModel.length,
         itemBuilder: (context, index) {
           final chat = _chatCtrl.convertionsMessageListModel[index];
