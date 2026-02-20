@@ -5,6 +5,7 @@ import 'package:clothing_exchange/views/screens/About%20us/about_us_screen.dart'
 import 'package:clothing_exchange/views/screens/Home/home_screen.dart';
 import 'package:clothing_exchange/views/screens/Legal%20Notice/legal_notice_screen.dart';
 import 'package:clothing_exchange/views/screens/Profile/change_password_screen.dart';
+import 'package:clothing_exchange/views/screens/Settings/delete_account_page.dart';
 import 'package:clothing_exchange/views/screens/Terms%20and%20Privacy/privacy_policy_screen.dart';
 import 'package:clothing_exchange/views/screens/Terms%20and%20Privacy/terms_&_conditions.dart';
 import 'package:clothing_exchange/views/widget/CustomOutlinedButton.dart';
@@ -30,11 +31,26 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
+        // leading: IconButton(
+        //   // onPressed: () => Get.offAll(MainBottomNavScreen(), arguments: 0),
+        //   onPressed: () => Get.back(),
+        //   icon: Icon(Icons.arrow_back_ios),
+        // ),
         leading: IconButton(
-          // onPressed: () => Get.offAll(MainBottomNavScreen(), arguments: 0),
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            // If there's a previous route, go back
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              // Otherwise go to home/main screen
+              Get.offAll(MainBottomNavScreen(), arguments: 0);
+            }
+          },
+          icon: const Icon(Icons.arrow_back_ios),
         ),
+
+
+
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,6 +294,43 @@ class SettingsScreen extends StatelessWidget {
                               const SizedBox(width: 8),
                               Text(
                                 "Support",
+                                style: AppTextFont.regular(
+                                    15, AppColors.primary_text_color),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.arrow_forward_ios,
+                                  color: AppColors.primary_text_color)
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 8,
+                  ),
+                  CustomOutlinedButton(
+                    borderRadius: 20,
+                    onPressed: () => Get.to(DeleteAccountPage()),
+                    borderColor: AppColors.secondaryColor,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(Icons.delete_forever,color: AppColors.error,size: 25,),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Delete",
                                 style: AppTextFont.regular(
                                     15, AppColors.primary_text_color),
                               ),

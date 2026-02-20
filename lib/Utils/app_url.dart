@@ -11,6 +11,7 @@ class AppUrl {
   static String verifyEmail = '$baseUrl/auth/verify-email';
   static String resetPassword = '$baseUrl/auth/reset-password';
   static String forgotPassword = '$baseUrl/auth/forgot-password';
+  static String deleteAccount = '$baseUrl/users/delete_account';
 
   static String allProduct = '$baseUrl/products/all?page=1&limit=100000';
   static String wishlistEndPoint = '$baseUrl/favorite';
