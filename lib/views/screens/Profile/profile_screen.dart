@@ -100,7 +100,7 @@ class ProfileScreen extends StatelessWidget {
                             text: "Basic",
                             elevation: 0,
                             onPressed:
-                                () => Get.to(() => SubscriptionPackageScreen()),
+                                () =>{}/* Get.to(() => SubscriptionPackageScreen())*/,
                           ),
                         ],
                       ),
