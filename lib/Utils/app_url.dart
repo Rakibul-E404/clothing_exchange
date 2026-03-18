@@ -27,4 +27,14 @@ class AppUrl {
   static String getSingleConversation(String conversationId) {
     return '$baseUrl/conversation/get-messages?conversationId=$conversationId';
   }
+
+
+  static String blockConversation = "$baseUrl/conversation/block";
+
+
+  static String reportProduct(String productId) {
+    return '$baseUrl/report/$productId';
+  }
+
+
 }
