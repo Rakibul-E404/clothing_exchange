@@ -1,15 +1,11 @@
 import 'package:clothing_exchange/images/assets_path.dart';
 import 'package:clothing_exchange/views/main_bottom_nav.dart';
-import 'package:clothing_exchange/views/screens/Auth/signin_screen.dart';
 import 'package:clothing_exchange/views/screens/Splash/onboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import '../../../Utils/app_constants.dart';
 import '../../../Utils/helper_shared_pref.dart';
-import '../../../controllers/splash_controller.dart';
 import '../../../utils/colors.dart';
-import '../Home/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

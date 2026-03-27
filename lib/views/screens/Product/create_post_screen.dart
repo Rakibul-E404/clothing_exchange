@@ -495,41 +495,55 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       ),
                       const SizedBox(height: 20),
                       const Text(
-                        'Color',
+                        'Coluor',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 10),
+
+                      /// ,,,, with cancel button:::
                       GestureDetector(
                         onTap: () {
                           showDialog(
                             context: context,
-                            builder:
-                                (_) => AlertDialog(
-                                  title: const Text('Pick a Color'),
-                                  content: SingleChildScrollView(
-                                    child: ColorPicker(
-                                      pickerColor: _selectedColor,
-                                      onColorChanged: (color) {
-                                        setState(() => _selectedColor = color);
-                                      },
-                                      showLabel: true,
-                                      pickerAreaHeightPercent: 0.8,
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: const Text(
-                                        'OK',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ),
-                                  ],
+                            builder: (_) => AlertDialog(
+                              title: const Text('Pick a Coluor'),
+                              content: SingleChildScrollView(
+                                child: ColorPicker(
+                                  pickerColor: _selectedColor.withAlpha(255), // Set opacity to 100 (fully opaque)
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      _selectedColor = color.withAlpha(255); // Ensure opacity is fully opaque
+                                    });
+                                  },
+                                  showLabel: false, // Hide the color name label
+                                  enableAlpha: false, // Hide the opacity bar
+                                  pickerAreaHeightPercent: 0.8,
                                 ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();  // Close the dialog without making changes
+                                  },
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();  // Close the dialog and confirm the selected color
+                                  },
+                                  child: const Text(
+                                    'OK',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         },
                         child: Container(
@@ -542,6 +556,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           ),
                         ),
                       ),
+
+
+
+
+
                       const SizedBox(height: 20),
                       const Text(
                         'Description',

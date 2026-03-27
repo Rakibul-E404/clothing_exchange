@@ -10,7 +10,6 @@ import '../../../utils/colors.dart';
 import '../../fonts_style/fonts_style.dart';
 import '../../widget/customElevatedButton.dart';
 import '../../widget/customTextField.dart';
-import '../Home/home_screen.dart';
 import 'forgot_password_screen.dart';
 import 'signup_screen.dart';
 
@@ -42,16 +41,33 @@ class _SigninScreenState extends State<SigninScreen> {
     String? storedPassword = prefs.getString('password');
 
     if (storedEmail != null && storedPassword != null) {
-      _emailController.text = storedEmail;
-      _passwordController.text = storedPassword;
+      setState(() {
+        _emailController.text = storedEmail;
+        _passwordController.text = storedPassword;
+      });
     }
   }
 
-  // Function to store the user's credentials
-  Future<void> _storeCredentials(String email, String password) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('email', email);
-    prefs.setString('password', password);
+  // Helper method to show snackbar using ScaffoldMessenger
+  void _showSnackbar(String message, {bool isError = true}) {
+    if (!mounted) return;
+
+    if(isError == true)
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: const EdgeInsets.all(10),
+      ),
+    );
   }
 
   Future<void> _signInUi() async {
@@ -59,13 +75,7 @@ class _SigninScreenState extends State<SigninScreen> {
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill in all fields',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _showSnackbar('Please fill in all fields');
       return;
     }
 
@@ -81,33 +91,26 @@ class _SigninScreenState extends State<SigninScreen> {
       });
 
       if (response.containsKey('error')) {
-        Get.snackbar(
-          'Login Failed',
-          response['error'],
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        _showSnackbar(response['error']);
       } else {
         _userId = response['userId'];
-        print('Logged in userId: $_userId');
 
-        // Store credentials after successful login
-        _storeCredentials(email, password);
+        // Store credentials if needed (commented out as per your code)
+        // _storeCredentials(email, password);
+
+
+
+        // Small delay to show success message before navigation
+        await Future.delayed(const Duration(milliseconds: 500));
+
         Get.find<HomeController>().fetchProducts();
-        Get.offAll(() => MainBottomNavScreen());
+        Get.offAll(() => const MainBottomNavScreen());
       }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-      Get.snackbar(
-        'Error',
-        'An error occurred during login',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _showSnackbar('An error occurred during login. Please try again.');
     }
   }
 
@@ -212,7 +215,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         alignment: Alignment.center,
                         child: TextButton(
                           onPressed: () {
-                            Get.to(() => ForgotPasswordScreen());
+                            Get.to(() => const ForgotPasswordScreen());
                           },
                           child: Text(
                             'Forgot Password?',
@@ -226,33 +229,33 @@ class _SigninScreenState extends State<SigninScreen> {
                       const Spacer(),
                       _isLoading
                           ? Center(
-                            child: SizedBox(
-                              height: 200,
-                              width: 200,
-                              child: Lottie.asset(
-                                'assets/animations/loading.json',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          )
-                          : SizedBox(
-                            width: double.infinity,
-                            child: CustomElevatedButton(
-                              text: 'Sign In',
-                              onPressed: _isLoading ? null : _signInUi,
-                              color: AppColors.custom_Elevated_Button_Color,
-                              textColor:
-                                  AppColors.Custom_Outlined_Button_Text_Color,
-                              borderRadius: 32.0,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              elevation: 0.0,
-                              textStyle: AppTextFont.regular(
-                                18,
-                                AppColors.secondary_text_color,
-                              ),
-                              child: null,
-                            ),
+                        child: SizedBox(
+                          height: 200,
+                          width: 200,
+                          child: Lottie.asset(
+                            'assets/animations/loading.json',
+                            fit: BoxFit.contain,
                           ),
+                        ),
+                      )
+                          : SizedBox(
+                        width: double.infinity,
+                        child: CustomElevatedButton(
+                          text: 'Sign In',
+                          onPressed: _isLoading ? null : _signInUi,
+                          color: AppColors.custom_Elevated_Button_Color,
+                          textColor:
+                          AppColors.Custom_Outlined_Button_Text_Color,
+                          borderRadius: 32.0,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 0.0,
+                          textStyle: AppTextFont.regular(
+                            18,
+                            AppColors.secondary_text_color,
+                          ),
+                          child: null,
+                        ),
+                      ),
                       const SizedBox(height: 24),
                       Center(
                         child: Row(
@@ -267,18 +270,18 @@ class _SigninScreenState extends State<SigninScreen> {
                             ),
                             TextButton(
                               onPressed: () {
-                                Get.to(() => SignUPScreen());
+                                Get.to(() => const SignUPScreen());
                               },
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                               child: Text(
                                 'Sign up',
                                 style: TextStyle(
                                   color:
-                                      AppColors
-                                          .Custom_Outlined_Button_Text_Color,
+                                  AppColors.Custom_Outlined_Button_Text_Color,
                                   fontWeight: FontWeight.normal,
                                   fontSize: 16,
                                 ),
@@ -297,4 +300,12 @@ class _SigninScreenState extends State<SigninScreen> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 }
+

@@ -27,7 +27,7 @@ class FavoriteController extends GetxController {
   Future<Map<String, String>> _getHeaders() async {
     final token = await _getToken();
     if (token == null) {
-      throw Exception('No token found');
+      // throw Exception('No token found');
     }
     return {
       'Content-Type': 'application/json',
@@ -47,9 +47,9 @@ class FavoriteController extends GetxController {
         final List attributes = data['data']['attributes'];
         favoriteItems.value =
             attributes.map((item) => FavoriteItem.fromJson(item)).toList();
-      } else {
-        Get.snackbar('Error', 'Failed to fetch favorites');
-      }
+      } /*else {
+        // Get.snackbar('Error', 'Failed to fetch favorites');
+      }*/
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
@@ -64,10 +64,10 @@ class FavoriteController extends GetxController {
         Uri.parse('$baseUrl/$productId'),
         headers: headers,
       );
-      debugPrint('===========>');
-      debugPrint('$baseUrl/$productId');
-      debugPrint('${response.body.toString()}');
-      debugPrint('${response.statusCode.toString()}');
+      // debugPrint('===========>');
+      // debugPrint('$baseUrl/$productId');
+      // debugPrint('${response.body.toString()}');
+      // debugPrint('${response.statusCode.toString()}');
 
       // removeFavorite(productId) ;
       if (response.statusCode == 200 || response.statusCode == 201) {

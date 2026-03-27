@@ -151,7 +151,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-                    : const Text('Resend Code'),
+                    : const Text('Resend Code',style: TextStyle(
+                  color: Colors.black
+                ),),
               ),
           ],
         ),
