@@ -509,7 +509,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           showDialog(
                             context: context,
                             builder: (_) => AlertDialog(
-                              title: const Text('Pick a Color'),
+                              title: const Text('Pick a Coluor'),
                               content: SingleChildScrollView(
                                 child: ColorPicker(
                                   pickerColor: _selectedColor.withAlpha(255), // Set opacity to 100 (fully opaque)

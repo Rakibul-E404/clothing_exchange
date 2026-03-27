@@ -6,7 +6,7 @@
 
 
     <application
-        android:label="Clothing Exchange"
+        android:label="Beare Mount Clothing"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
